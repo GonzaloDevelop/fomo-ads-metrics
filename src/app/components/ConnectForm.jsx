@@ -75,7 +75,7 @@ export default function ConnectForm({ onFetchBusinesses, onConnect, onSelectAcco
                     setError('Inicio de sesión cancelado o no autorizado.');
                 }
             },
-            { scope: 'ads_read,business_management' }
+            { scope: 'ads_read,business_management', auth_type: 'rerequest' }
         );
     }
 
