@@ -96,8 +96,8 @@ function fmtCompactGeneric(v) {
 // ============================
 // Default chart metrics per objective
 const CHART_DEFAULTS = {
-    OUTCOME_SALES: { a: 'spend', b: 'action_values_purchase' },
-    CONVERSIONS: { a: 'spend', b: 'action_values_purchase' },
+    OUTCOME_SALES: { a: 'spend', b: 'revenue' },
+    CONVERSIONS: { a: 'spend', b: 'revenue' },
     MESSAGES: { a: 'spend', b: 'results' },
     OUTCOME_LEADS: { a: 'spend', b: 'results' },
     LEAD_GENERATION: { a: 'spend', b: 'results' },
