@@ -564,6 +564,61 @@ export default function DashboardClient({ connection, googleConnection, initialD
     }, [filteredCampaigns, customMetrics]);
 
     // --- Filter insights by campaign IDs (so chart matches objective filter) ---
+    // Helper: compute derived metrics for a single aggregated row (same formulas as kpiData)
+    function enrichInsightRow(r, cms = []) {
+        const s = r.spend || 0;
+        if (r.impressions > 0) r.ctr = (r.clicks / r.impressions) * 100;
+        if (r.clicks > 0) r.cpc = s / r.clicks;
+        if (r.results > 0) r.cost_per_result = s / r.results;
+        const rev = r.action_values_purchase || r['action_values_offsite_conversion.fb_pixel_purchase'] || 0;
+        if (rev > 0) r.revenue = rev;
+        if (rev > 0 && s > 0) r.roas = rev / s;
+        if (r.impressions > 0) r.cpm = (s / r.impressions) * 1000;
+        if (r.reach > 0) { r.frequency = r.impressions / r.reach; r.cpp = (s / r.reach) * 1000; }
+        if (r.unique_inline_link_clicks > 0) {
+            r.cost_per_unique_inline_link_click = s / r.unique_inline_link_clicks;
+            if (r.impressions > 0) r.unique_inline_link_click_ctr = (r.unique_inline_link_clicks / r.impressions) * 100;
+        }
+        if (r.outbound_clicks > 0) {
+            r.cost_per_outbound_click = s / r.outbound_clicks;
+            if (r.impressions > 0) r.outbound_clicks_ctr = (r.outbound_clicks / r.impressions) * 100;
+        }
+        if (r.landing_page_views > 0) r.cost_per_landing_page_view = s / r.landing_page_views;
+        if (r.view_content > 0) r.cost_per_view_content = s / r.view_content;
+        if (r.add_to_cart > 0) r.cost_per_add_to_cart = s / r.add_to_cart;
+        if (r.initiate_checkout > 0) r.cost_per_initiate_checkout = s / r.initiate_checkout;
+        if (r.outbound_clicks > 0) r.pct_visitas = ((r.landing_page_views || 0) / r.outbound_clicks) * 100;
+        if (r.landing_page_views > 0) r.pct_ver_contenido = ((r.view_content || 0) / r.landing_page_views) * 100;
+        if (r.view_content > 0) r.pct_carritos = ((r.add_to_cart || 0) / r.view_content) * 100;
+        if (r.add_to_cart > 0) r.pct_checkout = ((r.initiate_checkout || 0) / r.add_to_cart) * 100;
+        const purchases = r.actions_purchase || r['actions_offsite_conversion.fb_pixel_purchase'] || 0;
+        if (r.initiate_checkout > 0) r.pct_compras = (purchases / r.initiate_checkout) * 100;
+        if (r.landing_page_views > 0) r.pct_compras_landing = (purchases / r.landing_page_views) * 100;
+        const msgs = r.actions_messaging_conversation_started_7d || r['actions_onsite_conversion.messaging_conversation_started_7d'] || 0;
+        const leads = r.actions_lead || r['actions_onsite_conversion.lead_grouped'] || r['actions_offsite_conversion.fb_pixel_lead'] || 0;
+        if (r.unique_inline_link_clicks > 0) {
+            r.pct_mensajes = (msgs / r.unique_inline_link_clicks) * 100;
+            r.tasa_conversion_leads = (leads / r.unique_inline_link_clicks) * 100;
+        }
+        if (r.landing_page_views > 0) r.tasa_conversion_leads_web = (leads / r.landing_page_views) * 100;
+        const video3s = r.actions_video_view || r.video_p25_video_view || 0;
+        if (r.impressions > 0 && video3s > 0) r.hook_rate = (video3s / r.impressions) * 100;
+        const purchaseCount = purchases || r.results || 0;
+        if (purchaseCount > 0 && rev > 0) r.ticket_promedio = rev / purchaseCount;
+        for (const cm of cms) {
+            const a = r[cm.metricA] || 0;
+            const b = r[cm.metricB] || 0;
+            if (b === 0 && cm.operator === '/') continue;
+            switch (cm.operator) {
+                case '/': r[cm.id] = a / b; break;
+                case '*': r[cm.id] = a * b; break;
+                case '+': r[cm.id] = a + b; break;
+                case '-': r[cm.id] = a - b; break;
+            }
+        }
+        return r;
+    }
+
     const filteredInsights = useMemo(() => {
         if (!activeData?.insights) return [];
         const campaignIds = new Set(filteredCampaigns.map(c => c.id));
@@ -577,8 +632,10 @@ export default function DashboardClient({ connection, googleConnection, initialD
                 byDate[d][key] = (byDate[d][key] || 0) + val;
             }
         }
-        return Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date));
-    }, [activeData?.insights, filteredCampaigns]);
+        return Object.values(byDate)
+            .map(r => enrichInsightRow(r, customMetrics))
+            .sort((a, b) => a.date.localeCompare(b.date));
+    }, [activeData?.insights, filteredCampaigns, customMetrics]);
 
     const filteredPrevInsights = useMemo(() => {
         if (!activeData?.previousInsights) return [];
@@ -593,8 +650,10 @@ export default function DashboardClient({ connection, googleConnection, initialD
                 byDate[d][key] = (byDate[d][key] || 0) + val;
             }
         }
-        return Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date));
-    }, [activeData?.previousInsights, filteredCampaigns]);
+        return Object.values(byDate)
+            .map(r => enrichInsightRow(r, customMetrics))
+            .sort((a, b) => a.date.localeCompare(b.date));
+    }, [activeData?.previousInsights, filteredCampaigns, customMetrics]);
 
     // --- Filter region data by campaign IDs ---
     const filteredRegionData = useMemo(() => {

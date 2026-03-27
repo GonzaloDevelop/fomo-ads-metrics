@@ -160,7 +160,8 @@ export default function InsightsChart({ insights, previousInsights, allMetrics, 
     // Delta calculation
     const deltaNum = totalPrevA > 0 ? ((totalA - totalPrevA) / totalPrevA) * 100 : 0;
     const invertedA = isInvertMetric(metricA);
-    const isPositiveA = invertedA ? deltaNum <= 0 : deltaNum >= 0;
+    const isPositiveA = invertedA ? deltaNum <= 0 : deltaNum >= 0; // for color (semantic good/bad)
+    const isIncreased = deltaNum >= 0; // for arrow direction (actual change direction)
 
     // Dual mode: values for metric B
     const valuesB = mode === 'dual' ? currentSorted.map(d => d[metricB] || 0) : [];
@@ -330,7 +331,7 @@ export default function InsightsChart({ insights, previousInsights, allMetrics, 
                                     </span>
                                     {mode === 'single' && totalPrevA > 0 && (
                                         <span className={cn('text-xs font-semibold flex items-center gap-0.5', isPositiveA ? 'text-[var(--success)]' : 'text-[var(--danger)]')}>
-                                            {isPositiveA ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                                            {isIncreased ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                                             {Math.abs(deltaNum).toFixed(1)}%
                                         </span>
                                     )}
