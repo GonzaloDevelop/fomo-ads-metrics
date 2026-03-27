@@ -3,7 +3,7 @@
 import { useState, useMemo, useTransition, useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { connectWithToken, selectAdAccount, disconnectMeta, getMetaData, fetchAccountList, fetchBusinessesFromToken } from './_actions/meta';
+import { connectWithToken, selectAdAccount, disconnectMeta, getMetaData, fetchAccountList, fetchBusinessesFromToken, fetchBusinessesForPicker, fetchAccountsForBusiness, fetchAllAccountsForPicker } from './_actions/meta';
 import { getGoogleAuthUrl, fetchGoogleAccountList, selectGoogleAccount, disconnectGoogle, getGoogleData } from './_actions/google';
 import { saveSetting } from './_actions/settings';
 import { recomputeResults } from './_lib/metaApi';
@@ -78,6 +78,11 @@ export default function DashboardClient({ connection, googleConnection, initialD
     const [connInfo, setConnInfo] = useState(connection);
     const [adAccounts, setAdAccounts] = useState([]); // fetched from API, not cookie
     const [showAccountPicker, setShowAccountPicker] = useState(false);
+    const [pickerView, setPickerView] = useState('all'); // 'all' | 'portfolio'
+    const [pickerBusinesses, setPickerBusinesses] = useState([]);
+    const [pickerSelectedBiz, setPickerSelectedBiz] = useState(null); // { id, name }
+    const [pickerBizAccounts, setPickerBizAccounts] = useState([]);
+    const [pickerLoading, setPickerLoading] = useState(false);
     const [selectedMetrics, setSelectedMetrics] = useState(userSettings.kpi_metrics || null);
     const [tableMetrics, setTableMetrics] = useState(userSettings.table_metrics || null);
     const [customMetrics, setCustomMetrics] = useState(userSettings.custom_metrics || []);
@@ -821,20 +826,111 @@ export default function DashboardClient({ connection, googleConnection, initialD
                                         </button>
                                         {showAccountPicker && (
                                             <>
-                                                <div className="fixed inset-0 z-40" onClick={() => setShowAccountPicker(false)} />
-                                                <div className="absolute top-full left-0 mt-2 w-[360px] max-h-[400px] overflow-y-auto bg-[var(--bg-card)] rounded-xl border border-[var(--border-primary)] z-50" style={{ boxShadow: 'var(--shadow-md)' }}>
-                                                    <div className="p-2 border-b border-[var(--border-primary)]">
-                                                        <p className="text-xs font-medium text-[var(--text-tertiary)] px-2 py-1">Cambiar cuenta Meta</p>
+                                                <div className="fixed inset-0 z-40" onClick={() => { setShowAccountPicker(false); setPickerSelectedBiz(null); setPickerBizAccounts([]); }} />
+                                                <div className="absolute top-full left-0 mt-2 w-[360px] bg-[var(--bg-card)] rounded-xl border border-[var(--border-primary)] z-50" style={{ boxShadow: 'var(--shadow-md)' }}>
+                                                    {/* View toggle */}
+                                                    <div className="flex border-b border-[var(--border-primary)]">
+                                                        <button
+                                                            onClick={async () => {
+                                                                setPickerView('portfolio');
+                                                                setPickerSelectedBiz(null);
+                                                                setPickerBizAccounts([]);
+                                                                if (!pickerBusinesses.length) {
+                                                                    setPickerLoading(true);
+                                                                    const r = await fetchBusinessesForPicker();
+                                                                    if (r.ok) setPickerBusinesses(r.businesses || []);
+                                                                    setPickerLoading(false);
+                                                                }
+                                                            }}
+                                                            className={cn('flex-1 py-2 text-xs font-medium cursor-pointer transition-colors', pickerView === 'portfolio' ? 'text-[var(--accent-primary)] border-b-2 border-[var(--accent-primary)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]')}
+                                                        >
+                                                            Portfolios comerciales
+                                                        </button>
+                                                        <button
+                                                            onClick={async () => {
+                                                                setPickerView('all');
+                                                                setPickerSelectedBiz(null);
+                                                                if (adAccounts.length === 0) {
+                                                                    setPickerLoading(true);
+                                                                    const r = await fetchAllAccountsForPicker();
+                                                                    if (r.ok) setAdAccounts(r.accounts || []);
+                                                                    setPickerLoading(false);
+                                                                }
+                                                            }}
+                                                            className={cn('flex-1 py-2 text-xs font-medium cursor-pointer transition-colors', pickerView === 'all' ? 'text-[var(--accent-primary)] border-b-2 border-[var(--accent-primary)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]')}
+                                                        >
+                                                            Todas las cuentas
+                                                        </button>
                                                     </div>
-                                                    <div className="p-1">
-                                                        {adAccounts.map(acc => (
+
+                                                    <div className="max-h-[360px] overflow-y-auto p-1">
+                                                        {pickerLoading && (
+                                                            <div className="flex items-center justify-center py-6 text-xs text-[var(--text-tertiary)] gap-2">
+                                                                <RefreshCw size={13} className="animate-spin" />
+                                                                Cargando...
+                                                            </div>
+                                                        )}
+
+                                                        {/* Portfolio view */}
+                                                        {!pickerLoading && pickerView === 'portfolio' && !pickerSelectedBiz && (
+                                                            pickerBusinesses.map(biz => (
+                                                                <button
+                                                                    key={biz.id}
+                                                                    onClick={async () => {
+                                                                        setPickerLoading(true);
+                                                                        setPickerSelectedBiz(biz);
+                                                                        const r = await fetchAccountsForBusiness(biz.id);
+                                                                        if (r.ok) setPickerBizAccounts(r.accounts || []);
+                                                                        setPickerLoading(false);
+                                                                    }}
+                                                                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--bg-hover)] cursor-pointer transition-all text-left"
+                                                                >
+                                                                    {biz.picture
+                                                                        ? <img src={biz.picture} alt="" className="w-7 h-7 rounded-md object-cover flex-shrink-0" />
+                                                                        : <Building2 size={14} className="flex-shrink-0 text-[var(--text-tertiary)]" />
+                                                                    }
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="text-sm font-medium truncate">{biz.name}</p>
+                                                                        <p className="text-xs text-[var(--text-tertiary)]">{biz.id}</p>
+                                                                    </div>
+                                                                    <ChevronDown size={13} className="text-[var(--text-tertiary)] -rotate-90 flex-shrink-0" />
+                                                                </button>
+                                                            ))
+                                                        )}
+
+                                                        {/* Portfolio → accounts */}
+                                                        {!pickerLoading && pickerView === 'portfolio' && pickerSelectedBiz && (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => { setPickerSelectedBiz(null); setPickerBizAccounts([]); }}
+                                                                    className="flex items-center gap-1.5 px-3 py-2 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
+                                                                >
+                                                                    <ChevronDown size={12} className="rotate-90" />
+                                                                    {pickerSelectedBiz.name}
+                                                                </button>
+                                                                {pickerBizAccounts.map(acc => (
+                                                                    <button
+                                                                        key={acc.id}
+                                                                        onClick={() => { handleSelectAccount(acc.id); setPickerSelectedBiz(null); setPickerBizAccounts([]); }}
+                                                                        className={cn('w-full flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all text-left', acc.id === connInfo?.selected_account_id ? 'bg-[var(--accent-muted)] text-[var(--accent-primary)]' : 'hover:bg-[var(--bg-hover)]')}
+                                                                    >
+                                                                        <Building2 size={14} className="flex-shrink-0" />
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <p className="text-sm font-medium truncate">{acc.name}</p>
+                                                                            <p className="text-xs text-[var(--text-tertiary)]">{acc.id} — {acc.currency}</p>
+                                                                        </div>
+                                                                        {acc.id === connInfo?.selected_account_id && <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />}
+                                                                    </button>
+                                                                ))}
+                                                            </>
+                                                        )}
+
+                                                        {/* All accounts view */}
+                                                        {!pickerLoading && pickerView === 'all' && adAccounts.map(acc => (
                                                             <button
                                                                 key={acc.id}
                                                                 onClick={() => handleSelectAccount(acc.id)}
-                                                                className={cn(
-                                                                    'w-full flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all text-left',
-                                                                    acc.id === connInfo?.selected_account_id ? 'bg-[var(--accent-muted)] text-[var(--accent-primary)]' : 'hover:bg-[var(--bg-hover)]'
-                                                                )}
+                                                                className={cn('w-full flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all text-left', acc.id === connInfo?.selected_account_id ? 'bg-[var(--accent-muted)] text-[var(--accent-primary)]' : 'hover:bg-[var(--bg-hover)]')}
                                                             >
                                                                 <Building2 size={14} className="flex-shrink-0" />
                                                                 <div className="flex-1 min-w-0">

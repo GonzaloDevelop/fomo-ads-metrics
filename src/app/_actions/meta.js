@@ -119,6 +119,48 @@ export async function fetchAccountList() {
 }
 
 /**
+ * Fetch all authorized business portfolios using the stored token.
+ */
+export async function fetchBusinessesForPicker() {
+    const result = await getUserMetaToken();
+    if (result.error) return result;
+    try {
+        const businesses = await fetchMyBusinesses(result.token);
+        return { ok: true, businesses };
+    } catch (err) {
+        return { error: err.message };
+    }
+}
+
+/**
+ * Fetch all ad accounts for a specific business using the stored token.
+ */
+export async function fetchAccountsForBusiness(businessId) {
+    const result = await getUserMetaToken();
+    if (result.error) return result;
+    try {
+        const accounts = await fetchBusinessAdAccounts(result.token, businessId);
+        return { ok: true, accounts };
+    } catch (err) {
+        return { error: err.message };
+    }
+}
+
+/**
+ * Fetch ALL ad accounts across all authorized businesses using the stored token.
+ */
+export async function fetchAllAccountsForPicker() {
+    const result = await getUserMetaToken();
+    if (result.error) return result;
+    try {
+        const accounts = await fetchMyAdAccounts(result.token);
+        return { ok: true, accounts };
+    } catch (err) {
+        return { error: err.message };
+    }
+}
+
+/**
  * Select ad account — save to DB.
  */
 export async function selectAdAccount(accountId, accountName, accountCurrency) {
