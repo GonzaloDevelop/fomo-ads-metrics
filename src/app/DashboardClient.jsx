@@ -646,7 +646,7 @@ export default function DashboardClient({ connection, googleConnection, initialD
                         </div>
                     )}
                     <div className="text-center mb-8">
-                        <img src="/logo.png" alt="FOMO" className="w-16 h-16 rounded-2xl mx-auto mb-4 object-cover" />
+                        <img src="/logo.png" alt="FOMO" className="h-20 mx-auto mb-4 rounded-2xl" />
                         <h1 className="text-2xl font-bold text-[var(--text-primary)]">FOMO Ads Metrics</h1>
                         <p className="text-[var(--text-secondary)] mt-2 mb-4">
                             {isMeta
@@ -683,7 +683,7 @@ export default function DashboardClient({ connection, googleConnection, initialD
             <header className="sticky top-0 z-30 bg-[var(--bg-card)] border-b border-[var(--border-primary)] px-4 sm:px-6 py-3">
                 <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <img src="/logo.png" alt="FOMO" className="w-9 h-9 rounded-xl object-cover" />
+                        <img src="/logo.png" alt="FOMO" className="h-9 rounded-xl" />
                         <div>
                             <div className="flex items-center gap-2">
                                 <h1 className="text-base font-bold text-[var(--text-primary)] leading-tight">FOMO Ads</h1>
