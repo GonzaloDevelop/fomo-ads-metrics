@@ -768,6 +768,13 @@ export default function DashboardClient({ connection, googleConnection, initialD
                         <div className="flex justify-center mb-6">
                             <PlatformToggle />
                         </div>
+                        <button
+                            onClick={() => signOut()}
+                            className="flex items-center gap-1.5 mx-auto px-3 py-1.5 rounded-lg text-xs text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] cursor-pointer transition-all"
+                        >
+                            <LogOut size={13} />
+                            Cerrar sesión
+                        </button>
                     </div>
                     {isMeta ? (
                         <ConnectForm onFetchBusinesses={fetchBusinessesFromToken} onConnect={handleConnect} onSelectAccount={handleSelectAccount} />
