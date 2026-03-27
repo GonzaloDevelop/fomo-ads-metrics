@@ -15,35 +15,65 @@ function fmt(n, type, currency) {
     return new Intl.NumberFormat('es-AR').format(Math.round(n));
 }
 
-// --- Column definitions per objective ---
+// --- Column definitions ---
 
-const COL = {
-    // Sales
-    purchases:   { key: 'purchases',   label: 'Compras',          type: 'number' },
-    revenue:     { key: 'revenue',     label: 'Facturacion',      type: 'currency', color: 'success' },
-    spend:       { key: 'spend',       label: 'Inversion',        type: 'currency', color: 'danger' },
-    roas:        { key: 'roas',        label: 'ROAS',             type: 'roas' },
-    ticket:      { key: 'ticket',      label: 'Ticket Promedio',  type: 'currency' },
-    cpa:         { key: 'cpa',         label: 'CPA',              type: 'currency', color: 'danger' },
-    // Messages
-    messages:    { key: 'messages',    label: 'Mensajes',         type: 'number' },
-    cpm_msg:     { key: 'cpm_msg',     label: 'Costo/Mensaje',    type: 'currency', color: 'danger' },
+const C = {
+    // Meta
+    ad_format:          { key: 'ad_format',              label: 'Formato',                    type: 'badge' },
+    ad_status:          { key: 'ad_status',              label: 'Estado',                     type: 'status' },
+    // Resultados
+    spend:              { key: 'spend',                  label: 'Inversión',                  type: 'currency' },
+    results:            { key: 'results',                label: 'Resultados',                 type: 'number' },
+    cost_result:        { key: 'cost_result',            label: 'Costo por Resultado',        type: 'currency' },
+    revenue:            { key: 'revenue',                label: 'Valor Conv. Compras',        type: 'currency' },
+    roas:               { key: 'roas',                   label: 'ROAS',                       type: 'roas' },
+    ticket:             { key: 'ticket',                 label: 'Valor Conv. Promedio',       type: 'currency' },
+    purchases:          { key: 'purchases',              label: 'Compras',                    type: 'number' },
+    cpa:                { key: 'cpa',                    label: 'Costo por Compra',           type: 'currency' },
+    // Funnel de ventas
+    pct_compras_landing: { key: 'pct_compras_landing',   label: '% Compras/Landing',          type: 'percent' },
+    pct_compras:        { key: 'pct_compras',            label: '% Compras/Checkouts',        type: 'percent' },
+    initiate_checkout:  { key: 'initiate_checkout',      label: 'Pagos Iniciados',            type: 'number' },
+    cost_checkout:      { key: 'cost_checkout',          label: 'Costo/Pago Iniciado',        type: 'currency' },
+    pct_checkout:       { key: 'pct_checkout',           label: '% Checkout/Carritos',        type: 'percent' },
+    add_to_cart:        { key: 'add_to_cart',            label: 'Artículos al Carrito',       type: 'number' },
+    cost_add_to_cart:   { key: 'cost_add_to_cart',       label: 'Costo/Artículo al Carrito',  type: 'currency' },
+    pct_carritos:       { key: 'pct_carritos',           label: '% Carritos/Vis. Contenido',  type: 'percent' },
+    view_content:       { key: 'view_content',           label: 'Vis. de Contenido',          type: 'number' },
+    cost_view_content:  { key: 'cost_view_content',      label: 'Costo/Vis. Contenido',       type: 'currency' },
+    pct_ver_contenido:  { key: 'pct_ver_contenido',      label: '% Vis. Contenido/Landing',   type: 'percent' },
+    // Tráfico
+    landing_views:      { key: 'landing_page_views',     label: 'Visitas a Landing',          type: 'number' },
+    cost_landing:       { key: 'cost_landing',           label: 'Costo/Visita Landing',       type: 'currency' },
+    pct_visitas:        { key: 'pct_visitas',            label: '% Visitas/Clics Salientes',  type: 'percent' },
+    outbound_clicks:    { key: 'outbound_clicks',        label: 'Clics Salientes',            type: 'number' },
+    outbound_ctr:       { key: 'outbound_clicks_ctr',    label: '% Clics Salientes',          type: 'percent' },
+    cost_outbound:      { key: 'cost_outbound',          label: 'Costo/Clic Saliente',        type: 'currency' },
+    // Clics únicos
+    unique_link_clicks: { key: 'unique_link_clicks',     label: 'Clics Únicos Enlace',        type: 'number' },
+    cost_unique_link:   { key: 'cost_unique_link',       label: 'Costo/Clic Único Enlace',    type: 'currency' },
+    ctr_unique_link:    { key: 'ctr_unique_link',        label: 'CTR Único (Enlace)',          type: 'percent' },
+    // Mensajes
+    messages:           { key: 'messages',               label: 'Conversaciones',             type: 'number' },
+    cost_message:       { key: 'cost_message',           label: 'Costo/Conversación',         type: 'currency' },
+    pct_mensajes:       { key: 'pct_mensajes',           label: '% Mensajes/Clics Únicos',    type: 'percent' },
     // Leads
-    leads:       { key: 'leads',       label: 'Leads',            type: 'number' },
-    cpl:         { key: 'cpl',         label: 'Costo/Lead',       type: 'currency', color: 'danger' },
-    // General
-    results:     { key: 'results',     label: 'Resultados',       type: 'number' },
-    cost_result: { key: 'cost_result', label: 'Costo/Resultado',  type: 'currency', color: 'danger' },
-    impressions: { key: 'impressions', label: 'Impresiones',      type: 'number' },
-    clicks:      { key: 'clicks',      label: 'Clics',            type: 'number' },
-    ctr:         { key: 'ctr',         label: 'CTR',              type: 'percent' },
-    cpc:         { key: 'cpc',         label: 'CPC',              type: 'currency' },
+    leads:              { key: 'leads',                  label: 'Clientes Potenciales',       type: 'number' },
+    cost_lead:          { key: 'cost_lead',              label: 'Costo por Lead',             type: 'currency' },
+    tasa_leads:         { key: 'tasa_leads',             label: 'Tasa Conv. Leads',           type: 'percent' },
+    tasa_leads_web:     { key: 'tasa_leads_web',         label: 'Tasa Conv. Leads Web',       type: 'percent' },
     // Video
-    hook_rate:   { key: 'hook_rate',   label: 'Hook Rate',        type: 'percent' },
-    video_views: { key: 'video_views', label: 'Vistas Video',     type: 'number' },
-    // Format & Status
-    ad_format:   { key: 'ad_format',   label: 'Formato',          type: 'badge' },
-    ad_status:   { key: 'ad_status',   label: 'Estado',           type: 'status' },
+    hook_rate:          { key: 'hook_rate',              label: 'Hook Rate (3s)',              type: 'percent' },
+    video_avg_time:     { key: 'video_avg_time',         label: 'Tiempo Prom. Video',         type: 'decimal' },
+    // General
+    impressions:        { key: 'impressions',            label: 'Impresiones',                type: 'number' },
+    reach:              { key: 'reach',                  label: 'Alcance',                    type: 'number' },
+    frequency:          { key: 'frequency',              label: 'Frecuencia',                 type: 'decimal' },
+    cpm:                { key: 'cpm',                    label: 'CPM',                        type: 'currency' },
+    cpp:                { key: 'cpp',                    label: 'Costo/1.000 Alcanzadas',     type: 'currency' },
+    clicks:             { key: 'clicks',                 label: 'Clics',                      type: 'number' },
+    ctr:                { key: 'ctr',                    label: 'CTR',                        type: 'percent' },
+    cpc:                { key: 'cpc',                    label: 'CPC',                        type: 'currency' },
 };
 
 function getColumnsForObjective(objective, hasVideo, hasRevenue) {
@@ -51,29 +81,79 @@ function getColumnsForObjective(objective, hasVideo, hasRevenue) {
         switch (objective) {
             case 'OUTCOME_SALES':
             case 'CONVERSIONS':
-                return [COL.ad_format, COL.ad_status, COL.purchases, COL.revenue, COL.spend, COL.roas, COL.cpa, COL.ticket, COL.ctr];
+                return [
+                    C.ad_format, C.ad_status, C.spend, C.revenue, C.roas, C.purchases, C.cpa, C.ticket,
+                    C.pct_compras_landing, C.pct_compras, C.initiate_checkout, C.cost_checkout,
+                    C.pct_checkout, C.add_to_cart, C.cost_add_to_cart, C.pct_carritos,
+                    C.view_content, C.cost_view_content, C.pct_ver_contenido,
+                    C.landing_views, C.cost_landing, C.pct_visitas,
+                    C.outbound_clicks, C.outbound_ctr, C.cost_outbound,
+                    C.frequency, C.reach, C.cpp, C.impressions, C.cpm,
+                ];
             case 'MESSAGES':
-                return [COL.ad_format, COL.ad_status, COL.messages, COL.cpm_msg, COL.spend, COL.clicks, COL.ctr, COL.cpc];
-            case 'OUTCOME_LEADS':
+                return [
+                    C.ad_format, C.ad_status, C.spend, C.messages, C.cost_message, C.pct_mensajes,
+                    C.unique_link_clicks, C.cost_unique_link, C.ctr_unique_link,
+                    C.frequency, C.reach, C.cpp, C.impressions, C.cpm,
+                ];
             case 'LEAD_GENERATION':
-                return [COL.ad_format, COL.ad_status, COL.leads, COL.cpl, COL.spend, COL.clicks, COL.ctr, COL.cpc];
+                return [
+                    C.ad_format, C.ad_status, C.spend, C.leads, C.cost_lead, C.tasa_leads,
+                    C.unique_link_clicks, C.cost_unique_link, C.ctr_unique_link,
+                    C.frequency, C.reach, C.cpp, C.impressions, C.cpm,
+                ];
+            case 'OUTCOME_LEADS':
+                return [
+                    C.ad_format, C.ad_status, C.spend, C.leads, C.cost_lead, C.tasa_leads_web,
+                    C.landing_views, C.cost_landing, C.pct_visitas,
+                    C.outbound_clicks, C.cost_outbound, C.outbound_ctr,
+                    C.frequency, C.reach, C.cpp, C.impressions, C.cpm,
+                ];
             case 'OUTCOME_TRAFFIC':
             case 'LINK_CLICKS':
-                return [COL.ad_format, COL.ad_status, COL.clicks, COL.cpc, COL.spend, COL.ctr, COL.impressions];
-            case 'OUTCOME_ENGAGEMENT':
-                return [COL.ad_format, COL.ad_status, COL.results, COL.cost_result, COL.spend, COL.clicks, COL.ctr];
+                return [
+                    C.ad_format, C.ad_status, C.spend, C.landing_views, C.cost_landing,
+                    C.outbound_clicks, C.cost_outbound, C.pct_visitas,
+                    C.unique_link_clicks, C.cost_unique_link, C.ctr_unique_link,
+                    C.frequency, C.reach, C.cpp, C.impressions, C.cpm,
+                ];
             case 'OUTCOME_AWARENESS':
             case 'REACH':
-                return [COL.ad_format, COL.ad_status, COL.impressions, COL.spend, COL.clicks, COL.ctr, COL.cpc];
+                return [
+                    C.ad_format, C.ad_status, C.spend, C.reach, C.cpp, C.results, C.cost_result,
+                    C.unique_link_clicks, C.cost_unique_link, C.ctr_unique_link,
+                    C.frequency, C.impressions, C.cpm,
+                ];
+            case 'OUTCOME_ENGAGEMENT':
+                return [
+                    C.ad_format, C.ad_status, C.spend, C.results, C.cost_result,
+                    C.unique_link_clicks, C.cost_unique_link, C.ctr_unique_link,
+                    C.frequency, C.reach, C.cpp, C.impressions, C.cpm,
+                ];
             default:
-                // MIXED: if there's revenue data, show sales columns; otherwise general
                 if (hasRevenue) {
-                    return [COL.ad_format, COL.ad_status, COL.results, COL.revenue, COL.spend, COL.roas, COL.cpa, COL.ctr];
+                    return [
+                        C.ad_format, C.ad_status, C.spend, C.results, C.revenue, C.roas, C.cpa,
+                        C.landing_views, C.outbound_clicks, C.unique_link_clicks, C.ctr_unique_link,
+                        C.frequency, C.reach, C.impressions, C.cpm,
+                    ];
                 }
-                return [COL.ad_format, COL.ad_status, COL.results, COL.spend, COL.cost_result, COL.clicks, COL.ctr, COL.cpc];
+                return [
+                    C.ad_format, C.ad_status, C.spend, C.results, C.cost_result,
+                    C.unique_link_clicks, C.cost_unique_link, C.ctr_unique_link,
+                    C.frequency, C.reach, C.impressions, C.cpm,
+                ];
         }
     })();
-    if (hasVideo) base.push(COL.hook_rate);
+    if (hasVideo) {
+        // Insert hook_rate and video_avg_time before the general metrics
+        const generalIdx = base.findIndex(c => c.key === 'frequency');
+        if (generalIdx > -1) {
+            base.splice(generalIdx, 0, C.hook_rate, C.video_avg_time);
+        } else {
+            base.push(C.hook_rate, C.video_avg_time);
+        }
+    }
     return base;
 }
 
@@ -181,62 +261,89 @@ function enrichAd(ad, objective) {
     const revenue = ad.revenue || 0;
     const clicks = ad.clicks || 0;
     const impressions = ad.impressions || 0;
+    const reach = ad.reach || 0;
 
-    // Messages
+    // Action counts
     const messages = ad.actions_messaging_conversation_started_7d
         || ad['actions_onsite_conversion.messaging_conversation_started_7d']
         || (objective === 'MESSAGES' ? results : 0);
-
-    // Leads
     const leads = ad.actions_lead
         || ad['actions_onsite_conversion.lead_grouped']
         || ad['actions_offsite_conversion.fb_pixel_lead']
         || (objective === 'OUTCOME_LEADS' || objective === 'LEAD_GENERATION' ? results : 0);
-
-    // Purchases
     const purchases = ad.actions_purchase
         || ad['actions_offsite_conversion.fb_pixel_purchase']
         || (objective === 'OUTCOME_SALES' || objective === 'CONVERSIONS' ? results : 0);
 
-    // Hook rate: 3-second video views / impressions
-    // Meta counts "video_view" action as 3-second view
-    const videoViews = ad.actions_video_view || ad.video_p25_video_view || 0;
-    const hookRate = impressions > 0 && videoViews > 0 ? (videoViews / impressions) * 100 : 0;
+    // Funnel counts (from buildMetrics top-level or fallback to action data)
+    const landing_page_views = ad.landing_page_views || ad.actions_landing_page_view || 0;
+    const view_content = ad.view_content || ad.actions_view_content || 0;
+    const add_to_cart = ad.add_to_cart || ad.actions_add_to_cart || 0;
+    const initiate_checkout = ad.initiate_checkout || ad.actions_initiate_checkout || 0;
+    const outbound_clicks = ad.outbound_clicks || ad.outbound_clicks_outbound_click || 0;
+    const unique_link_clicks = ad.unique_inline_link_clicks || 0;
 
-    // Format comes pre-detected from metaApi.js: VIDEO, CAROUSEL, IMAGE, SHARE, etc.
+    // Video
+    const videoViews = ad.actions_video_view || ad.video_p25_video_view || 0;
+    const hook_rate = ad.hook_rate || (impressions > 0 && videoViews > 0 ? (videoViews / impressions) * 100 : 0);
+    const video_avg_time = ad.video_avg_time || ad.video_avg_time_video_view || 0;
+
+    // Format
     const rawFormat = (ad.format || '').toUpperCase();
-    const formatMap = {
-        'VIDEO': 'Video',
-        'SLIDESHOW': 'Video',
-        'CAROUSEL': 'Carrusel',
-        'IMAGE': 'Imagen',
-        'PHOTO': 'Imagen',
-    };
-    const adFormat = formatMap[rawFormat] || rawFormat || 'Otro';
+    const formatMap = { 'VIDEO': 'Video', 'SLIDESHOW': 'Video', 'CAROUSEL': 'Carrusel', 'IMAGE': 'Imagen', 'PHOTO': 'Imagen' };
+    const ad_format = formatMap[rawFormat] || rawFormat || 'Otro';
 
     return {
         id: ad.id,
         name: ad.name,
         thumbnail: ad.thumbnail_url || '',
-        ad_format: adFormat,
+        ad_format,
         ad_status: ad.status || 'UNKNOWN',
-        spend,
-        impressions,
-        clicks,
-        results,
-        revenue,
-        purchases,
-        messages,
-        leads,
+        // Core
+        spend, impressions, clicks, results, revenue, reach,
+        purchases, messages, leads,
+        // Ratios
         ctr: impressions > 0 ? (clicks / impressions) * 100 : 0,
         cpc: clicks > 0 ? spend / clicks : 0,
+        cpm: impressions > 0 ? (spend / impressions) * 1000 : 0,
+        cpp: reach > 0 ? (spend / reach) * 1000 : 0,
+        frequency: reach > 0 ? impressions / reach : 0,
         roas: spend > 0 && revenue > 0 ? revenue / spend : 0,
         ticket: purchases > 0 ? revenue / purchases : 0,
         cpa: purchases > 0 ? spend / purchases : 0,
-        cpm_msg: messages > 0 ? spend / messages : 0,
-        cpl: leads > 0 ? spend / leads : 0,
         cost_result: results > 0 ? spend / results : 0,
-        hook_rate: hookRate,
+        // Messages/Leads
+        cost_message: messages > 0 ? spend / messages : 0,
+        cost_lead: leads > 0 ? spend / leads : 0,
+        pct_mensajes: unique_link_clicks > 0 ? (messages / unique_link_clicks) * 100 : 0,
+        tasa_leads: unique_link_clicks > 0 ? (leads / unique_link_clicks) * 100 : 0,
+        tasa_leads_web: landing_page_views > 0 ? (leads / landing_page_views) * 100 : 0,
+        // Funnel counts
+        landing_page_views,
+        view_content,
+        add_to_cart,
+        initiate_checkout,
+        outbound_clicks,
+        unique_link_clicks,
+        // Funnel per-step costs
+        cost_landing: landing_page_views > 0 ? spend / landing_page_views : 0,
+        cost_view_content: view_content > 0 ? spend / view_content : 0,
+        cost_add_to_cart: add_to_cart > 0 ? spend / add_to_cart : 0,
+        cost_checkout: initiate_checkout > 0 ? spend / initiate_checkout : 0,
+        cost_outbound: outbound_clicks > 0 ? spend / outbound_clicks : 0,
+        cost_unique_link: unique_link_clicks > 0 ? spend / unique_link_clicks : 0,
+        // Funnel %
+        pct_visitas: outbound_clicks > 0 ? (landing_page_views / outbound_clicks) * 100 : 0,
+        pct_ver_contenido: landing_page_views > 0 ? (view_content / landing_page_views) * 100 : 0,
+        pct_carritos: view_content > 0 ? (add_to_cart / view_content) * 100 : 0,
+        pct_checkout: add_to_cart > 0 ? (initiate_checkout / add_to_cart) * 100 : 0,
+        pct_compras: initiate_checkout > 0 ? (purchases / initiate_checkout) * 100 : 0,
+        pct_compras_landing: landing_page_views > 0 ? (purchases / landing_page_views) * 100 : 0,
+        outbound_clicks_ctr: impressions > 0 ? (outbound_clicks / impressions) * 100 : 0,
+        ctr_unique_link: ad.unique_inline_link_click_ctr || (impressions > 0 ? (unique_link_clicks / impressions) * 100 : 0),
+        // Video
+        hook_rate,
+        video_avg_time,
         video_views: videoViews,
     };
 }
@@ -283,8 +390,12 @@ function AdsTable({ data, columns, defaultSort, defaultDir, currency, title, emp
 
     // Map column keys to heat-compatible metric keys for isInvertMetric
     const heatKeyMap = {
-        cpa: 'cost_per_result', cpl: 'cost_per_result', cpm_msg: 'cost_per_result',
+        cpa: 'cost_per_result', cost_lead: 'cost_per_result', cost_message: 'cost_per_result',
         cost_result: 'cost_per_result', cpc: 'cpc', spend: 'spend',
+        cost_landing: 'cost_per_result', cost_view_content: 'cost_per_result',
+        cost_add_to_cart: 'cost_per_result', cost_checkout: 'cost_per_result',
+        cost_outbound: 'cost_per_result', cost_unique_link: 'cost_per_result',
+        cpm: 'cpm', cpp: 'cpp', frequency: 'frequency',
     };
 
     const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
@@ -411,7 +522,7 @@ function AdsTable({ data, columns, defaultSort, defaultDir, currency, title, emp
                                     }
                                     // BE threshold heat colors for ROAS and CPA
                                     let heatBg = 'transparent';
-                                    const isCpaCol = col.key === 'cpa' || col.key === 'cpl' || col.key === 'cpm_msg' || col.key === 'cost_result';
+                                    const isCpaCol = ['cpa', 'cost_lead', 'cost_message', 'cost_result'].includes(col.key);
                                     if (col.key === 'roas' && val > 0) {
                                         const threshold = roasBE || 1;
                                         const ratio = Math.min(val / threshold, 2) / 2;

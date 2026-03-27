@@ -438,53 +438,98 @@ export default function DashboardClient({ connection, googleConnection, initialD
     // --- Aggregate KPIs ---
     const kpiData = useMemo(() => {
         if (!filteredCampaigns.length) return null;
+
+        // All ratio/computed metrics that must NOT be summed
+        const SKIP_KEYS = new Set([
+            'ctr', 'cpc', 'cpm', 'cpp', 'cost_per_result', 'cost_per_unique_click',
+            'cost_per_inline_link_click', 'inline_link_click_ctr', 'frequency', 'roas',
+            'ticket_promedio', 'cost_per_unique_inline_link_click', 'unique_inline_link_click_ctr',
+            'cost_per_outbound_click', 'outbound_clicks_ctr',
+            'cost_per_landing_page_view', 'cost_per_view_content', 'cost_per_add_to_cart', 'cost_per_initiate_checkout',
+            'pct_visitas', 'pct_ver_contenido', 'pct_carritos', 'pct_checkout', 'pct_compras', 'pct_compras_landing',
+            'pct_mensajes', 'tasa_conversion_leads', 'tasa_conversion_leads_web',
+            'hook_rate', 'video_avg_time',
+        ]);
+
         const agg = {};
         for (const c of filteredCampaigns) {
             for (const [key, val] of Object.entries(c)) {
-                // Skip ratio/average metrics — they must be recomputed from aggregated totals
                 if (typeof val !== 'number') continue;
+                if (SKIP_KEYS.has(key)) continue;
                 if (key.startsWith('cost_per_action_type_') || key.startsWith('cost_per_unique_action_type_')) continue;
-                if (['ctr', 'cpc', 'cpm', 'cpp', 'cost_per_result', 'cost_per_unique_click',
-                     'cost_per_inline_link_click', 'frequency', 'roas', 'inline_link_click_ctr',
-                     'ticket_promedio'].includes(key)) continue;
+                if (key.startsWith('cost_per_outbound_click_') || key.startsWith('outbound_clicks_ctr_')) continue;
+                if (key.startsWith('video_avg_time_')) continue;
                 agg[key] = (agg[key] || 0) + val;
             }
         }
-        // Computed standard ratios
+
+        const s = agg.spend || 0;
+
+        // Standard ratios
         if (agg.impressions > 0) agg.ctr = (agg.clicks / agg.impressions) * 100;
-        if (agg.clicks > 0) agg.cpc = agg.spend / agg.clicks;
-        if (agg.results > 0) agg.cost_per_result = agg.spend / agg.results;
-        if (agg.revenue > 0 && agg.spend > 0) agg.roas = agg.revenue / agg.spend;
-        if (agg.impressions > 0) agg.cpm = (agg.spend / agg.impressions) * 1000;
-        if (agg.reach > 0) agg.frequency = agg.impressions / agg.reach;
-        if (agg.unique_clicks > 0) agg.cost_per_unique_click = agg.spend / agg.unique_clicks;
+        if (agg.clicks > 0) agg.cpc = s / agg.clicks;
+        if (agg.results > 0) agg.cost_per_result = s / agg.results;
+        if (agg.revenue > 0 && s > 0) agg.roas = agg.revenue / s;
+        if (agg.impressions > 0) agg.cpm = (s / agg.impressions) * 1000;
+        if (agg.reach > 0) { agg.frequency = agg.impressions / agg.reach; agg.cpp = (s / agg.reach) * 1000; }
+        if (agg.unique_clicks > 0) agg.cost_per_unique_click = s / agg.unique_clicks;
         if (agg.inline_link_clicks > 0) {
-            agg.cost_per_inline_link_click = agg.spend / agg.inline_link_clicks;
+            agg.cost_per_inline_link_click = s / agg.inline_link_clicks;
             if (agg.impressions > 0) agg.inline_link_click_ctr = (agg.inline_link_clicks / agg.impressions) * 100;
         }
-
-        // Recompute cost_per_action_type from spend / actions (e.g. cost_per_action_type_purchase = spend / actions_purchase)
-        for (const key of Object.keys(agg)) {
-            if (key.startsWith('actions_')) {
-                const actionType = key.slice('actions_'.length);
-                const count = agg[key];
-                if (count > 0) {
-                    agg[`cost_per_action_type_${actionType}`] = agg.spend / count;
-                }
-            }
-            if (key.startsWith('unique_actions_')) {
-                const actionType = key.slice('unique_actions_'.length);
-                const count = agg[key];
-                if (count > 0) {
-                    agg[`cost_per_unique_action_type_${actionType}`] = agg.spend / count;
-                }
-            }
+        if (agg.unique_inline_link_clicks > 0) {
+            agg.cost_per_unique_inline_link_click = s / agg.unique_inline_link_clicks;
+            if (agg.impressions > 0) agg.unique_inline_link_click_ctr = (agg.unique_inline_link_clicks / agg.impressions) * 100;
         }
 
-        // Built-in: Ticket Promedio (facturacion / compras)
-        const purchases = agg.actions_purchase || agg.actions_offsite_conversion_fb_pixel_purchase || agg.results || 0;
+        // Outbound clicks
+        if (agg.outbound_clicks > 0) {
+            agg.cost_per_outbound_click = s / agg.outbound_clicks;
+            if (agg.impressions > 0) agg.outbound_clicks_ctr = (agg.outbound_clicks / agg.impressions) * 100;
+        }
+
+        // Funnel per-step costs
+        if (agg.landing_page_views > 0) agg.cost_per_landing_page_view = s / agg.landing_page_views;
+        if (agg.view_content > 0) agg.cost_per_view_content = s / agg.view_content;
+        if (agg.add_to_cart > 0) agg.cost_per_add_to_cart = s / agg.add_to_cart;
+        if (agg.initiate_checkout > 0) agg.cost_per_initiate_checkout = s / agg.initiate_checkout;
+
+        // Funnel conversion percentages
+        if (agg.outbound_clicks > 0) agg.pct_visitas = (agg.landing_page_views / agg.outbound_clicks) * 100;
+        if (agg.landing_page_views > 0) agg.pct_ver_contenido = ((agg.view_content || 0) / agg.landing_page_views) * 100;
+        if (agg.view_content > 0) agg.pct_carritos = ((agg.add_to_cart || 0) / agg.view_content) * 100;
+        if (agg.add_to_cart > 0) agg.pct_checkout = ((agg.initiate_checkout || 0) / agg.add_to_cart) * 100;
+        const purchases = agg.actions_purchase || agg['actions_offsite_conversion.fb_pixel_purchase'] || 0;
+        if (agg.initiate_checkout > 0) agg.pct_compras = (purchases / agg.initiate_checkout) * 100;
+        if (agg.landing_page_views > 0) agg.pct_compras_landing = (purchases / agg.landing_page_views) * 100;
+
+        // Messages/Leads conversion rates
+        const messages = agg.actions_messaging_conversation_started_7d || agg['actions_onsite_conversion.messaging_conversation_started_7d'] || 0;
+        const leads = agg.actions_lead || agg['actions_onsite_conversion.lead_grouped'] || agg['actions_offsite_conversion.fb_pixel_lead'] || 0;
+        if (agg.unique_inline_link_clicks > 0) {
+            agg.pct_mensajes = (messages / agg.unique_inline_link_clicks) * 100;
+            agg.tasa_conversion_leads = (leads / agg.unique_inline_link_clicks) * 100;
+        }
+        if (agg.landing_page_views > 0) agg.tasa_conversion_leads_web = (leads / agg.landing_page_views) * 100;
+
+        // Video
+        const video3s = agg.actions_video_view || agg.video_p25_video_view || 0;
+        if (agg.impressions > 0 && video3s > 0) agg.hook_rate = (video3s / agg.impressions) * 100;
+
+        // Ticket Promedio
         const facturacion = agg.action_values_purchase || agg['action_values_offsite_conversion.fb_pixel_purchase'] || 0;
-        if (purchases > 0 && facturacion > 0) agg.ticket_promedio = facturacion / purchases;
+        const purchaseCount = purchases || agg.results || 0;
+        if (purchaseCount > 0 && facturacion > 0) agg.ticket_promedio = facturacion / purchaseCount;
+
+        // Recompute cost_per_action_type
+        for (const key of Object.keys(agg)) {
+            if (key.startsWith('actions_') && agg[key] > 0) {
+                agg[`cost_per_action_type_${key.slice(8)}`] = s / agg[key];
+            }
+            if (key.startsWith('unique_actions_') && agg[key] > 0) {
+                agg[`cost_per_unique_action_type_${key.slice(15)}`] = s / agg[key];
+            }
+        }
 
         // Custom user metrics
         for (const cm of customMetrics) {

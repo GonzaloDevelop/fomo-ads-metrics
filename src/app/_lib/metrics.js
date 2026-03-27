@@ -1,63 +1,73 @@
 /**
  * Metric registry — all Meta Ads metrics with metadata.
- * Categories match Meta Ads Manager structure.
+ * Categories and names match Meta Ads Manager in español.
+ * Organized by objective-specific groups.
  */
 
-// --- Metric definitions (ordered within categories) ---
+// --- Metric definitions ---
 
 export const METRIC_REGISTRY = {
-    // GENERAL
-    impressions:              { label: 'Impresiones',             category: 'General',      type: 'number',   icon: '👁' },
-    reach:                    { label: 'Alcance',                 category: 'General',      type: 'number',   icon: '📡' },
-    frequency:                { label: 'Frecuencia',              category: 'General',      type: 'decimal',  icon: '🔄' },
-    cpm:                      { label: 'CPM',                     category: 'General',      type: 'currency', icon: '💵' },
-    cpp:                      { label: 'CPP',                     category: 'General',      type: 'currency', icon: '💵' },
-    spend:                    { label: 'Inversion',               category: 'General',      type: 'currency', icon: '💰' },
+    // ========== RESULTADOS ==========
+    results:                  { label: 'Resultados',                    category: 'Resultados',         type: 'number',   icon: '🎯' },
+    cost_per_result:          { label: 'Costo por Resultado',           category: 'Resultados',         type: 'currency', icon: '🎯' },
+    revenue:                  { label: 'Valor de Conversión',           category: 'Resultados',         type: 'currency', icon: '💰' },
+    roas:                     { label: 'ROAS',                          category: 'Resultados',         type: 'roas',     icon: '📈' },
+    ticket_promedio:          { label: 'Valor Conv. Promedio',          category: 'Resultados',         type: 'currency', icon: '🧾' },
 
-    // ENGAGEMENT
-    ctr:                      { label: 'CTR',                     category: 'Engagement',   type: 'percent',  icon: '📊' },
-    cpc:                      { label: 'CPC',                     category: 'Engagement',   type: 'currency', icon: '💵' },
-    clicks:                   { label: 'Clics',                   category: 'Engagement',   type: 'number',   icon: '👆' },
-    unique_clicks:            { label: 'Clics Unicos',            category: 'Engagement',   type: 'number',   icon: '👆' },
-    cost_per_unique_click:    { label: 'Costo/Clic Unico',       category: 'Engagement',   type: 'currency', icon: '💵' },
-    inline_link_clicks:       { label: 'Clics en Enlace',        category: 'Engagement',   type: 'number',   icon: '🔗' },
-    cost_per_inline_link_click: { label: 'Costo/Clic Enlace',    category: 'Engagement',   type: 'currency', icon: '💵' },
-    inline_link_click_ctr:    { label: 'CTR de Enlace',           category: 'Engagement',   type: 'percent',  icon: '📊' },
+    // ========== FUNNEL DE VENTAS ==========
+    pct_compras:              { label: '% de Compras (Compras/Checkouts)',         category: 'Funnel de Ventas',  type: 'percent', icon: '🛒' },
+    initiate_checkout:        { label: 'Pagos Iniciados',                          category: 'Funnel de Ventas',  type: 'number',  icon: '💳' },
+    cost_per_initiate_checkout: { label: 'Costo por Pago Iniciado',                category: 'Funnel de Ventas',  type: 'currency', icon: '💳' },
+    pct_checkout:             { label: '% de Checkout (Checkouts/Carritos)',        category: 'Funnel de Ventas',  type: 'percent', icon: '🛒' },
+    add_to_cart:              { label: 'Artículos al Carrito',                      category: 'Funnel de Ventas',  type: 'number',  icon: '🛒' },
+    cost_per_add_to_cart:     { label: 'Costo por Artículo al Carrito',            category: 'Funnel de Ventas',  type: 'currency', icon: '🛒' },
+    pct_carritos:             { label: '% de Carritos (Carritos/Vis. Contenido)',   category: 'Funnel de Ventas',  type: 'percent', icon: '🛒' },
+    view_content:             { label: 'Visualizaciones de Contenido',             category: 'Funnel de Ventas',  type: 'number',  icon: '👁' },
+    cost_per_view_content:    { label: 'Costo por Vis. de Contenido',              category: 'Funnel de Ventas',  type: 'currency', icon: '👁' },
+    pct_ver_contenido:        { label: '% Ver Contenido (Vis./Visitas Landing)',   category: 'Funnel de Ventas',  type: 'percent', icon: '👁' },
+    pct_compras_landing:      { label: '% Compras por Visita Landing',             category: 'Funnel de Ventas',  type: 'percent', icon: '📊' },
 
-    // CONVERSIONES
-    results:                  { label: 'Resultados',              category: 'Conversiones', type: 'number',   icon: '🎯' },
-    cost_per_result:          { label: 'Costo por Resultado',     category: 'Conversiones', type: 'currency', icon: '🎯' },
-    roas:                     { label: 'ROAS',                    category: 'Conversiones', type: 'roas',     icon: '📈' },
-    ticket_promedio:          { label: 'Ticket Promedio',          category: 'Conversiones', type: 'currency', icon: '🧾' },
+    // ========== TRÁFICO ==========
+    landing_page_views:       { label: 'Visitas a Landing',             category: 'Tráfico',            type: 'number',   icon: '📄' },
+    cost_per_landing_page_view: { label: 'Costo por Visita Landing',    category: 'Tráfico',            type: 'currency', icon: '📄' },
+    pct_visitas:              { label: '% de Visitas (Landing/Clics Salientes)',  category: 'Tráfico', type: 'percent', icon: '📊' },
+    outbound_clicks:          { label: 'Clics Salientes',               category: 'Tráfico',            type: 'number',   icon: '🔗' },
+    cost_per_outbound_click:  { label: 'Costo por Clic Saliente',       category: 'Tráfico',            type: 'currency', icon: '🔗' },
+    outbound_clicks_ctr:      { label: '% Clics Salientes',             category: 'Tráfico',            type: 'percent',  icon: '🔗' },
 
-    // Acciones comunes (hardcoded para que aparezcan en alertas sin necesidad de data)
-    actions_purchase:                               { label: 'Compras',                category: 'Acciones',     type: 'number',   icon: '🛒' },
-    actions_lead:                                   { label: 'Leads',                  category: 'Acciones',     type: 'number',   icon: '🎯' },
-    actions_link_click:                             { label: 'Clics en Enlace',        category: 'Acciones',     type: 'number',   icon: '🔗' },
-    actions_landing_page_view:                      { label: 'Vistas de Landing',      category: 'Acciones',     type: 'number',   icon: '📄' },
-    actions_view_content:                           { label: 'Vistas de Contenido',    category: 'Acciones',     type: 'number',   icon: '👁' },
-    actions_add_to_cart:                            { label: 'Agregar al Carrito',     category: 'Acciones',     type: 'number',   icon: '🛒' },
-    actions_initiate_checkout:                      { label: 'Iniciar Checkout',       category: 'Acciones',     type: 'number',   icon: '💳' },
-    actions_messaging_conversation_started_7d:      { label: 'Mensajes Iniciados',     category: 'Acciones',     type: 'number',   icon: '💬' },
+    // ========== CLICS ÚNICOS ==========
+    unique_inline_link_clicks:          { label: 'Clics Únicos en Enlace',          category: 'Clics Únicos',  type: 'number',   icon: '🔗' },
+    cost_per_unique_inline_link_click:  { label: 'Costo por Clic Único Enlace',     category: 'Clics Únicos',  type: 'currency', icon: '🔗' },
+    unique_inline_link_click_ctr:       { label: 'CTR Único (Enlace)',              category: 'Clics Únicos',  type: 'percent',  icon: '📊' },
 
-    // Costos por accion comunes
-    cost_per_action_type_purchase:                  { label: 'Costo por Compra',       category: 'Costos por Accion', type: 'currency', icon: '💵' },
-    cost_per_action_type_lead:                      { label: 'Costo por Lead',         category: 'Costos por Accion', type: 'currency', icon: '💵' },
-    cost_per_action_type_messaging_conversation_started_7d: { label: 'Costo por Mensaje', category: 'Costos por Accion', type: 'currency', icon: '💵' },
-    cost_per_action_type_link_click:                { label: 'Costo por Clic Enlace',  category: 'Costos por Accion', type: 'currency', icon: '💵' },
+    // ========== CONVERSIÓN (Mensajes/Leads) ==========
+    pct_mensajes:             { label: '% de Mensajes (Conv./Clics Únicos)',       category: 'Conversión',  type: 'percent', icon: '💬' },
+    tasa_conversion_leads:    { label: 'Tasa Conv. Leads (Leads/Clics Únicos)',    category: 'Conversión',  type: 'percent', icon: '🎯' },
+    tasa_conversion_leads_web: { label: 'Tasa Conv. Leads Web (Leads/Visitas)',    category: 'Conversión',  type: 'percent', icon: '🎯' },
 
-    // Facturacion comunes
-    action_values_purchase:                         { label: 'Facturacion Compra',     category: 'Facturacion',  type: 'currency', icon: '💰' },
-    action_values_lead:                             { label: 'Facturacion Lead',       category: 'Facturacion',  type: 'currency', icon: '💰' },
+    // ========== VIDEO ==========
+    hook_rate:                { label: 'Hook Rate (3s/Impresiones)',     category: 'Video',              type: 'percent',  icon: '🎬' },
+    video_avg_time:           { label: 'Tiempo Promedio Reproducción',   category: 'Video',              type: 'decimal',  icon: '⏱' },
+
+    // ========== ENGAGEMENT GENERAL ==========
+    spend:                    { label: 'Inversión',                     category: 'General',            type: 'currency', icon: '💰' },
+    impressions:              { label: 'Impresiones',                   category: 'General',            type: 'number',   icon: '👁' },
+    reach:                    { label: 'Alcance',                       category: 'General',            type: 'number',   icon: '📡' },
+    frequency:                { label: 'Frecuencia',                    category: 'General',            type: 'decimal',  icon: '🔄' },
+    cpm:                      { label: 'CPM',                           category: 'General',            type: 'currency', icon: '💵' },
+    cpp:                      { label: 'Costo por 1.000 Alcanzadas',    category: 'General',            type: 'currency', icon: '💵' },
+    clicks:                   { label: 'Clics',                         category: 'General',            type: 'number',   icon: '👆' },
+    ctr:                      { label: 'CTR',                           category: 'General',            type: 'percent',  icon: '📊' },
+    cpc:                      { label: 'CPC',                           category: 'General',            type: 'currency', icon: '💵' },
 };
 
 // Dynamic action metrics (discovered from data)
 const ACTION_PREFIXES = {
     'actions_':                      { labelPrefix: '',           category: 'Acciones',         type: 'number' },
-    'action_values_':                { labelPrefix: 'Facturacion ', category: 'Facturacion',      type: 'currency' },
-    'cost_per_action_type_':         { labelPrefix: 'Costo por ', category: 'Costos por Accion', type: 'currency' },
-    'unique_actions_':               { labelPrefix: 'Unicos: ',   category: 'Acciones Unicas',  type: 'number' },
-    'cost_per_unique_action_type_':  { labelPrefix: 'Costo Unico por ', category: 'Costos por Accion', type: 'currency' },
+    'action_values_':                { labelPrefix: 'Valor ',     category: 'Valores',          type: 'currency' },
+    'cost_per_action_type_':         { labelPrefix: 'Costo por ', category: 'Costos',           type: 'currency' },
+    'unique_actions_':               { labelPrefix: 'Únicos: ',   category: 'Acciones Únicas',  type: 'number' },
+    'cost_per_unique_action_type_':  { labelPrefix: 'Costo Único por ', category: 'Costos', type: 'currency' },
 };
 
 const ACTION_TYPE_LABELS = {
@@ -71,22 +81,36 @@ const ACTION_TYPE_LABELS = {
     'omni_purchase': 'Compra (Omni)',
     'link_click': 'Clic en Link',
     'landing_page_view': 'Vista de Landing',
-    'post_engagement': 'Interaccion Post',
-    'page_engagement': 'Interaccion Pagina',
+    'post_engagement': 'Interacción Post',
+    'page_engagement': 'Interacción Página',
     'video_view': 'Vista de Video',
     'complete_registration': 'Registro Completo',
     'onsite_conversion.messaging_conversation_started_7d': 'Mensaje (on-site)',
     'add_to_cart': 'Agregar al Carrito',
     'initiate_checkout': 'Iniciar Checkout',
-    'search': 'Busqueda',
+    'search': 'Búsqueda',
     'view_content': 'Vista de Contenido',
 };
+
+// Keys to EXCLUDE from dynamic discovery (already registered as top-level computed metrics)
+const SKIP_DYNAMIC_KEYS = new Set([
+    'actions_landing_page_view', 'actions_view_content', 'actions_add_to_cart',
+    'actions_initiate_checkout', 'actions_video_view', 'actions_purchase',
+    'actions_messaging_conversation_started_7d', 'actions_lead',
+    'actions_onsite_conversion.messaging_conversation_started_7d',
+    'actions_onsite_conversion.lead_grouped', 'actions_offsite_conversion.fb_pixel_lead',
+    'actions_offsite_conversion.fb_pixel_purchase',
+    'outbound_clicks_outbound_click', 'cost_per_outbound_click_outbound_click',
+    'outbound_clicks_ctr_outbound_click',
+    'video_p25_video_view', 'video_p50_video_view', 'video_p75_video_view', 'video_p100_video_view',
+    'video_avg_time_video_view',
+]);
 
 export function discoverActionMetrics(items) {
     const discovered = {};
     for (const item of items) {
         for (const key of Object.keys(item)) {
-            if (discovered[key] || METRIC_REGISTRY[key]) continue;
+            if (discovered[key] || METRIC_REGISTRY[key] || SKIP_DYNAMIC_KEYS.has(key)) continue;
             for (const [prefix, meta] of Object.entries(ACTION_PREFIXES)) {
                 if (key.startsWith(prefix)) {
                     const actionType = key.slice(prefix.length);
@@ -112,7 +136,11 @@ export function getAllMetrics(items) {
 
 // --- Categories (ordered) ---
 
-const CATEGORY_ORDER = ['General', 'Engagement', 'Conversiones', 'Facturacion', 'Acciones', 'Costos por Accion', 'Acciones Unicas', 'Personalizadas'];
+const CATEGORY_ORDER = [
+    'Resultados', 'Funnel de Ventas', 'Tráfico', 'Clics Únicos', 'Conversión',
+    'Video', 'General',
+    'Acciones', 'Valores', 'Costos', 'Acciones Únicas', 'Personalizadas',
+];
 
 export function getMetricsByCategory(allMetrics) {
     const cats = {};
@@ -120,12 +148,10 @@ export function getMetricsByCategory(allMetrics) {
         if (!cats[meta.category]) cats[meta.category] = [];
         cats[meta.category].push({ key, ...meta });
     }
-    // Return in defined order
     const ordered = {};
     for (const cat of CATEGORY_ORDER) {
         if (cats[cat]) ordered[cat] = cats[cat];
     }
-    // Append any remaining
     for (const [cat, metrics] of Object.entries(cats)) {
         if (!ordered[cat]) ordered[cat] = metrics;
     }
@@ -133,13 +159,19 @@ export function getMetricsByCategory(allMetrics) {
 }
 
 // --- Default visible metrics per objective ---
+// These define what KPI cards show by default when first selecting an objective
 
 export const DEFAULT_METRICS = {
-    OUTCOME_SALES: ['spend', 'action_values_purchase', 'roas', 'ticket_promedio', 'results', 'cost_per_result'],
-    CONVERSIONS: ['spend', 'action_values_purchase', 'roas', 'ticket_promedio', 'results', 'cost_per_result'],
-    MESSAGES: ['spend', 'results', 'cost_per_result', 'impressions', 'ctr'],
-    OUTCOME_LEADS: ['spend', 'results', 'cost_per_result', 'impressions', 'ctr'],
-    LEAD_GENERATION: ['spend', 'results', 'cost_per_result', 'impressions', 'ctr'],
+    OUTCOME_SALES: ['spend', 'revenue', 'roas', 'results', 'cost_per_result', 'ticket_promedio', 'pct_compras', 'add_to_cart', 'landing_page_views'],
+    CONVERSIONS: ['spend', 'revenue', 'roas', 'results', 'cost_per_result', 'ticket_promedio'],
+    MESSAGES: ['spend', 'results', 'cost_per_result', 'pct_mensajes', 'unique_inline_link_clicks', 'cost_per_unique_inline_link_click'],
+    OUTCOME_LEADS: ['spend', 'results', 'cost_per_result', 'tasa_conversion_leads_web', 'landing_page_views', 'cost_per_landing_page_view'],
+    LEAD_GENERATION: ['spend', 'results', 'cost_per_result', 'tasa_conversion_leads', 'unique_inline_link_clicks', 'cost_per_unique_inline_link_click'],
+    OUTCOME_ENGAGEMENT: ['spend', 'results', 'cost_per_result', 'impressions', 'reach', 'ctr'],
+    OUTCOME_TRAFFIC: ['spend', 'landing_page_views', 'cost_per_landing_page_view', 'outbound_clicks', 'cost_per_outbound_click', 'ctr'],
+    LINK_CLICKS: ['spend', 'landing_page_views', 'cost_per_landing_page_view', 'clicks', 'cpc', 'ctr'],
+    OUTCOME_AWARENESS: ['spend', 'reach', 'cpp', 'impressions', 'frequency', 'cpm'],
+    REACH: ['spend', 'reach', 'cpp', 'impressions', 'frequency', 'cpm'],
     _DEFAULT: ['spend', 'results', 'cost_per_result', 'impressions', 'clicks', 'ctr'],
 };
 
@@ -182,35 +214,29 @@ export function getCurrencySymbol(currency = 'USD') {
 
 // --- Heat map helpers ---
 
-/**
- * Inverted metrics: lower is better (costs).
- */
 export function isInvertMetric(key) {
     if (key.startsWith('cost_per_')) return true;
     if (key.startsWith('cost_per_action_type_')) return true;
     if (key.startsWith('cost_per_unique_action_type_')) return true;
-    return ['cpc', 'cpm', 'cpp', 'cost_per_result', 'cost_per_unique_click', 'cost_per_inline_link_click'].includes(key);
+    return ['cpc', 'cpm', 'cpp', 'cost_per_result', 'cost_per_unique_click',
+        'cost_per_inline_link_click', 'cost_per_unique_inline_link_click',
+        'cost_per_outbound_click', 'cost_per_landing_page_view',
+        'cost_per_view_content', 'cost_per_add_to_cart', 'cost_per_initiate_checkout',
+        'frequency', 'spend',
+    ].includes(key);
 }
 
-/**
- * Get heat color for a value within a dataset.
- * Returns a background color string (green for good, red for bad).
- */
 export function getHeatColor(value, min, max, metricKey) {
     if (value == null || isNaN(value) || value === 0 || min === max) return 'transparent';
     const invert = isInvertMetric(metricKey);
-    // Normalize 0-1
     let ratio = (value - min) / (max - min);
-    if (invert) ratio = 1 - ratio; // flip: low cost = green
+    if (invert) ratio = 1 - ratio;
 
-    // Green (good) → transparent (middle) → Red (bad)
     if (ratio >= 0.5) {
-        // Green zone
-        const intensity = (ratio - 0.5) * 2; // 0 to 1
+        const intensity = (ratio - 0.5) * 2;
         return `rgba(16, 185, 129, ${(intensity * 0.18).toFixed(3)})`;
     } else {
-        // Red zone
-        const intensity = (0.5 - ratio) * 2; // 0 to 1
+        const intensity = (0.5 - ratio) * 2;
         return `rgba(239, 68, 68, ${(intensity * 0.18).toFixed(3)})`;
     }
 }

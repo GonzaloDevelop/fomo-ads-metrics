@@ -112,6 +112,7 @@ const SCALAR_FIELDS = [
     'reach', 'frequency', 'cpm', 'cpp',
     'unique_clicks', 'cost_per_unique_click',
     'inline_link_clicks', 'cost_per_inline_link_click', 'inline_link_click_ctr',
+    'unique_inline_link_clicks', 'cost_per_unique_inline_link_click', 'unique_inline_link_click_ctr',
 ].join(',');
 
 const ARRAY_FIELDS = [
@@ -120,6 +121,7 @@ const ARRAY_FIELDS = [
     'outbound_clicks', 'cost_per_outbound_click', 'outbound_clicks_ctr',
     'video_p25_watched_actions', 'video_p50_watched_actions',
     'video_p75_watched_actions', 'video_p100_watched_actions',
+    'video_avg_time_watched_actions',
     'purchase_roas',
 ].join(',');
 
@@ -170,6 +172,7 @@ function extractVideoMetrics(ins) {
         ...flattenActionArray(ins.video_p50_watched_actions, 'video_p50'),
         ...flattenActionArray(ins.video_p75_watched_actions, 'video_p75'),
         ...flattenActionArray(ins.video_p100_watched_actions, 'video_p100'),
+        ...flattenActionArray(ins.video_avg_time_watched_actions, 'video_avg_time'),
     };
 }
 
@@ -232,23 +235,104 @@ function buildMetrics(ins, objective) {
     const outboundData = extractOutboundClicks(ins);
     const videoData = extractVideoMetrics(ins);
 
+    const spend = parseFloat(ins.spend || 0);
+    const impressions = parseInt(ins.impressions || 0, 10);
+    const reach = parseInt(ins.reach || 0, 10);
+
+    // Surface outbound clicks as top-level
+    const outbound_clicks = outboundData.outbound_clicks_outbound_click || 0;
+    const cost_per_outbound_click = outboundData.cost_per_outbound_click_outbound_click || 0;
+    const outbound_clicks_ctr = outboundData.outbound_clicks_ctr_outbound_click || 0;
+
+    // Unique link clicks
+    const unique_inline_link_clicks = parseInt(ins.unique_inline_link_clicks || 0, 10);
+    const cost_per_unique_inline_link_click = parseFloat(ins.cost_per_unique_inline_link_click || 0);
+    const unique_inline_link_click_ctr = parseFloat(ins.unique_inline_link_click_ctr || 0);
+
+    // Funnel action counts
+    const landing_page_views = actionData.actions_landing_page_view || 0;
+    const view_content = actionData.actions_view_content || actionData['actions_offsite_conversion.fb_pixel_view_content'] || 0;
+    const add_to_cart = actionData.actions_add_to_cart || actionData['actions_offsite_conversion.fb_pixel_add_to_cart'] || 0;
+    const initiate_checkout = actionData.actions_initiate_checkout || actionData['actions_offsite_conversion.fb_pixel_initiate_checkout'] || 0;
+    const purchases = actionData.actions_purchase || actionData['actions_offsite_conversion.fb_pixel_purchase'] || 0;
+    const messages = actionData.actions_messaging_conversation_started_7d || actionData['actions_onsite_conversion.messaging_conversation_started_7d'] || 0;
+    const leads = actionData.actions_lead || actionData['actions_onsite_conversion.lead_grouped'] || actionData['actions_offsite_conversion.fb_pixel_lead'] || 0;
+
+    // Video hook rate: 3-second views / impressions
+    const video_3s_views = actionData.actions_video_view || videoData.video_p25_video_view || 0;
+    const hook_rate = impressions > 0 && video_3s_views > 0 ? (video_3s_views / impressions) * 100 : 0;
+    const video_avg_time = videoData.video_avg_time_video_view || 0;
+
+    // Funnel per-step costs
+    const cost_per_landing_page_view = landing_page_views > 0 ? spend / landing_page_views : 0;
+    const cost_per_view_content = view_content > 0 ? spend / view_content : 0;
+    const cost_per_add_to_cart = add_to_cart > 0 ? spend / add_to_cart : 0;
+    const cost_per_initiate_checkout = initiate_checkout > 0 ? spend / initiate_checkout : 0;
+
+    // Funnel conversion percentages
+    const pct_visitas = outbound_clicks > 0 ? (landing_page_views / outbound_clicks) * 100 : 0;
+    const pct_ver_contenido = landing_page_views > 0 ? (view_content / landing_page_views) * 100 : 0;
+    const pct_carritos = view_content > 0 ? (add_to_cart / view_content) * 100 : 0;
+    const pct_checkout = add_to_cart > 0 ? (initiate_checkout / add_to_cart) * 100 : 0;
+    const pct_compras = initiate_checkout > 0 ? (purchases / initiate_checkout) * 100 : 0;
+    const pct_compras_landing = landing_page_views > 0 ? (purchases / landing_page_views) * 100 : 0;
+    const pct_mensajes = unique_inline_link_clicks > 0 ? (messages / unique_inline_link_clicks) * 100 : 0;
+    const tasa_conversion_leads = unique_inline_link_clicks > 0 ? (leads / unique_inline_link_clicks) * 100 : 0;
+    const tasa_conversion_leads_web = landing_page_views > 0 ? (leads / landing_page_views) * 100 : 0;
+
+    // CPP (cost per 1000 reached)
+    const cpp = reach > 0 ? (spend / reach) * 1000 : parseFloat(ins.cpp || 0);
+
     return {
-        impressions: parseInt(ins.impressions || 0, 10),
+        impressions,
         clicks: parseInt(ins.clicks || 0, 10),
         ctr: parseFloat(ins.ctr || 0),
         cpc: parseFloat(ins.cpc || 0),
-        spend: parseFloat(ins.spend || 0),
-        reach: parseInt(ins.reach || 0, 10),
+        spend,
+        reach,
         frequency: parseFloat(ins.frequency || 0),
         cpm: parseFloat(ins.cpm || 0),
-        cpp: parseFloat(ins.cpp || 0),
+        cpp,
         unique_clicks: parseInt(ins.unique_clicks || 0, 10),
         cost_per_unique_click: parseFloat(ins.cost_per_unique_click || 0),
         inline_link_clicks: parseInt(ins.inline_link_clicks || 0, 10),
         cost_per_inline_link_click: parseFloat(ins.cost_per_inline_link_click || 0),
         inline_link_click_ctr: parseFloat(ins.inline_link_click_ctr || 0),
+        // Unique link clicks
+        unique_inline_link_clicks,
+        cost_per_unique_inline_link_click,
+        unique_inline_link_click_ctr,
+        // Outbound clicks (top-level)
+        outbound_clicks,
+        cost_per_outbound_click,
+        outbound_clicks_ctr,
+        // Funnel counts
+        landing_page_views,
+        view_content,
+        add_to_cart,
+        initiate_checkout,
+        // Funnel per-step costs
+        cost_per_landing_page_view,
+        cost_per_view_content,
+        cost_per_add_to_cart,
+        cost_per_initiate_checkout,
+        // Funnel %
+        pct_visitas,
+        pct_ver_contenido,
+        pct_carritos,
+        pct_checkout,
+        pct_compras,
+        pct_compras_landing,
+        pct_mensajes,
+        tasa_conversion_leads,
+        tasa_conversion_leads_web,
+        // Video
+        hook_rate,
+        video_avg_time,
+        // Results & revenue
         ...computeResults(actionData, objective),
         ...computeRevenue(actionData, ins),
+        // Raw action data (for dynamic discovery)
         ...actionData,
         ...outboundData,
         ...videoData,
