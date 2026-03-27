@@ -31,7 +31,7 @@ export default function DataDeletionPage() {
                 </li>
                 <li style={{ marginBottom: 12 }}>
                     <strong>Por correo electrónico:</strong> Enviá un email a{' '}
-                    <a href="mailto:gonza.var@hotmail.com" style={{ color: '#1877F2' }}>gonza.var@hotmail.com</a>{' '}
+                    <a href="mailto:hola@growthbrick.tech" style={{ color: '#1877F2' }}>hola@growthbrick.tech</a>{' '}
                     con el asunto <em>"Eliminación de datos"</em>. Procesaremos tu solicitud en un plazo de 30 días y te confirmaremos por email cuando esté completa.
                 </li>
             </ol>
@@ -47,7 +47,7 @@ export default function DataDeletionPage() {
 
             <hr style={{ border: 'none', borderTop: '1px solid #e5e5e5', margin: '32px 0' }} />
             <p style={{ color: '#888', fontSize: 14 }}>
-                Growth Brick · <a href="mailto:gonza.var@hotmail.com" style={{ color: '#1877F2' }}>gonza.var@hotmail.com</a>
+                Growth Brick · <a href="mailto:hola@growthbrick.tech" style={{ color: '#1877F2' }}>hola@growthbrick.tech</a>
             </p>
         </main>
     );
