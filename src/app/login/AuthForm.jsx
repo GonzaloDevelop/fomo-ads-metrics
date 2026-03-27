@@ -50,10 +50,8 @@ export default function AuthForm() {
         <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center p-4">
             <div className="w-full max-w-sm">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[var(--accent-primary)] text-white mb-4">
-                        <BarChart3 size={28} />
-                    </div>
-                    <h1 className="text-2xl font-bold text-[var(--text-primary)]">Fomo Ads Metrics</h1>
+                    <img src="/logo.png" alt="FOMO" className="w-16 h-16 rounded-2xl mx-auto mb-4 object-cover" />
+                    <h1 className="text-2xl font-bold text-[var(--text-primary)]">FOMO Ads Metrics</h1>
                     <p className="text-[var(--text-secondary)] mt-2">
                         {mode === 'login' ? 'Inicia sesion para acceder' : 'Crea tu cuenta'}
                     </p>

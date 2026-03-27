@@ -646,10 +646,8 @@ export default function DashboardClient({ connection, googleConnection, initialD
                         </div>
                     )}
                     <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[var(--accent-primary)] text-white mb-4">
-                            <BarChart3 size={28} />
-                        </div>
-                        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Fomo Ads Metrics</h1>
+                        <img src="/logo.png" alt="FOMO" className="w-16 h-16 rounded-2xl mx-auto mb-4 object-cover" />
+                        <h1 className="text-2xl font-bold text-[var(--text-primary)]">FOMO Ads Metrics</h1>
                         <p className="text-[var(--text-secondary)] mt-2 mb-4">
                             {isMeta
                                 ? (isConnected ? `${adAccounts.length} cuentas disponibles — elige una` : 'Conecta tu token de Meta Ads')
@@ -685,12 +683,10 @@ export default function DashboardClient({ connection, googleConnection, initialD
             <header className="sticky top-0 z-30 bg-[var(--bg-card)] border-b border-[var(--border-primary)] px-4 sm:px-6 py-3">
                 <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-[var(--accent-primary)] text-white">
-                            <BarChart3 size={18} />
-                        </div>
+                        <img src="/logo.png" alt="FOMO" className="w-9 h-9 rounded-xl object-cover" />
                         <div>
                             <div className="flex items-center gap-2">
-                                <h1 className="text-base font-bold text-[var(--text-primary)] leading-tight">Fomo Ads</h1>
+                                <h1 className="text-base font-bold text-[var(--text-primary)] leading-tight">FOMO Ads</h1>
                                 <PlatformToggle />
                             </div>
                             <div className="relative">

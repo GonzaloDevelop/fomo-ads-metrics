@@ -2,8 +2,12 @@ import { Toaster } from 'sonner';
 import './globals.css';
 
 export const metadata = {
-    title: 'Fomo Ads Metrics',
-    description: 'Dashboard de metricas de Meta Ads — by FOMO',
+    title: 'FOMO Ads Metrics',
+    description: 'Dashboard de métricas de Meta Ads — by FOMO Club',
+    icons: {
+        icon: '/favicon.png',
+        apple: '/logo.png',
+    },
 };
 
 export default function RootLayout({ children }) {
