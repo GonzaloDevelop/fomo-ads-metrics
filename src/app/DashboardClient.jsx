@@ -348,17 +348,21 @@ export default function DashboardClient({ connection, googleConnection, initialD
     }, [selectedMetrics, effectiveObjective, isMeta]);
 
     const MAX_METRICS = 12;
+    const kpiSaveRef = useRef(null);
     const handleToggleMetric = (key) => {
         setSelectedMetrics(prev => {
             const current = prev || activeMetrics;
+            let next;
             if (current.includes(key)) {
-                const next = current.filter(k => k !== key);
-                saveSetting('kpi_metrics', next);
-                return next;
+                next = current.filter(k => k !== key);
+            } else if (current.length >= MAX_METRICS) {
+                return current;
+            } else {
+                next = [...current, key];
             }
-            if (current.length >= MAX_METRICS) return current; // limit
-            const next = [...current, key];
-            saveSetting('kpi_metrics', next);
+            // Debounce save outside of render
+            clearTimeout(kpiSaveRef.current);
+            kpiSaveRef.current = setTimeout(() => saveSetting('kpi_metrics', next), 300);
             return next;
         });
     };
@@ -366,12 +370,11 @@ export default function DashboardClient({ connection, googleConnection, initialD
     const handleSaveCustomMetric = (cm) => {
         const updated = [...customMetrics, cm];
         setCustomMetrics(updated);
-        saveSetting('custom_metrics', updated);
-        // Auto-add to KPIs
+        setTimeout(() => saveSetting('custom_metrics', updated), 0);
         setSelectedMetrics(prev => {
             const current = prev || activeMetrics;
             const next = [...current, cm.id];
-            saveSetting('kpi_metrics', next);
+            setTimeout(() => saveSetting('kpi_metrics', next), 0);
             return next;
         });
         setShowCustomModal(false);
