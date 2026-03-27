@@ -570,6 +570,88 @@ export async function fetchMetaInsightsByRegion(token, accountId, dateRange = nu
     return aggregated;
 }
 
+/**
+ * Fetch insights broken down by age range.
+ * Returns [{ campaign_id, age, spend, impressions, clicks, reach }]
+ */
+export async function fetchMetaInsightsByAge(token, accountId, dateRange = null) {
+    const cleanId = accountId.startsWith('act_') ? accountId : `act_${accountId}`;
+    const cacheKey = `insights_age:${cleanId}:${JSON.stringify(dateRange)}`;
+    const cached = getCached(cacheKey, token);
+    if (cached) return cached;
+
+    const fields = 'campaign_id,spend,impressions,clicks,reach';
+    let endpoint;
+    if (dateRange) {
+        endpoint = `/${cleanId}/insights?fields=${fields}&breakdowns=age&level=campaign&limit=500&time_range=${JSON.stringify(dateRange)}`;
+    } else {
+        endpoint = `/${cleanId}/insights?fields=${fields}&breakdowns=age&level=campaign&limit=500&date_preset=last_30d`;
+    }
+
+    let allData = [];
+    let data = await graphFetch(endpoint, token);
+    allData.push(...(data.data || []));
+    while (data.paging?.next) {
+        const res = await fetch(data.paging.next, { cache: 'no-store' });
+        data = await res.json();
+        if (data.error) break;
+        allData.push(...(data.data || []));
+    }
+
+    const result = allData.map(d => ({
+        campaign_id: d.campaign_id,
+        age: d.age || 'Desconocido',
+        spend: parseFloat(d.spend || 0),
+        impressions: parseInt(d.impressions || 0, 10),
+        clicks: parseInt(d.clicks || 0, 10),
+        reach: parseInt(d.reach || 0, 10),
+    }));
+
+    setCache(cacheKey, result, token);
+    return result;
+}
+
+/**
+ * Fetch insights broken down by publisher platform (Facebook, Instagram, etc.).
+ * Returns [{ campaign_id, platform, spend, impressions, clicks, reach }]
+ */
+export async function fetchMetaInsightsByPlatform(token, accountId, dateRange = null) {
+    const cleanId = accountId.startsWith('act_') ? accountId : `act_${accountId}`;
+    const cacheKey = `insights_platform:${cleanId}:${JSON.stringify(dateRange)}`;
+    const cached = getCached(cacheKey, token);
+    if (cached) return cached;
+
+    const fields = 'campaign_id,spend,impressions,clicks,reach';
+    let endpoint;
+    if (dateRange) {
+        endpoint = `/${cleanId}/insights?fields=${fields}&breakdowns=publisher_platform&level=campaign&limit=500&time_range=${JSON.stringify(dateRange)}`;
+    } else {
+        endpoint = `/${cleanId}/insights?fields=${fields}&breakdowns=publisher_platform&level=campaign&limit=500&date_preset=last_30d`;
+    }
+
+    let allData = [];
+    let data = await graphFetch(endpoint, token);
+    allData.push(...(data.data || []));
+    while (data.paging?.next) {
+        const res = await fetch(data.paging.next, { cache: 'no-store' });
+        data = await res.json();
+        if (data.error) break;
+        allData.push(...(data.data || []));
+    }
+
+    const result = allData.map(d => ({
+        campaign_id: d.campaign_id,
+        platform: d.publisher_platform || 'Desconocido',
+        spend: parseFloat(d.spend || 0),
+        impressions: parseInt(d.impressions || 0, 10),
+        clicks: parseInt(d.clicks || 0, 10),
+        reach: parseInt(d.reach || 0, 10),
+    }));
+
+    setCache(cacheKey, result, token);
+    return result;
+}
+
 export async function exchangeForLongLivedToken(shortToken, appId, appSecret) {
     const url = `${GRAPH_API}/oauth/access_token?grant_type=fb_exchange_token&client_id=${encodeURIComponent(appId)}&client_secret=${encodeURIComponent(appSecret)}&fb_exchange_token=${encodeURIComponent(shortToken)}`;
     const res = await fetch(url, { cache: 'no-store' });

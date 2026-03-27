@@ -19,6 +19,8 @@ import SalesTracker from './components/SalesTracker';
 import MetricPicker from './components/MetricPicker';
 import RegionPieChart from './components/RegionPieChart';
 import FunnelChart from './components/FunnelChart';
+import AgeBarChart from './components/AgeBarChart';
+import PlatformBarChart from './components/PlatformBarChart';
 import CustomMetricModal from './components/CustomMetricModal';
 import { signOut } from './_actions/auth';
 import {
@@ -40,10 +42,10 @@ const OBJECTIVE_CATEGORIES = {
 
 export default function DashboardClient({ connection, googleConnection, initialData, isOwner = false, userName = '', userSettings = {} }) {
     // --- Theme ---
-    const [theme, setTheme] = useState('dark');
+    const [theme, setTheme] = useState('light');
 
     useEffect(() => {
-        const saved = localStorage.getItem('fomo-theme') || 'dark';
+        const saved = localStorage.getItem('fomo-theme') || 'light';
         setTheme(saved);
         document.documentElement.setAttribute('data-theme', saved);
     }, []);
@@ -80,6 +82,8 @@ export default function DashboardClient({ connection, googleConnection, initialD
     const [tableMetrics, setTableMetrics] = useState(userSettings.table_metrics || null);
     const [customMetrics, setCustomMetrics] = useState(userSettings.custom_metrics || []);
     const [showCustomModal, setShowCustomModal] = useState(false);
+    const [showAgeChart, setShowAgeChart] = useState(false);
+    const [showPlatformChart, setShowPlatformChart] = useState(false);
 
     // --- Google state ---
     const [gConnInfo, setGConnInfo] = useState(googleConnection);
@@ -600,6 +604,38 @@ export default function DashboardClient({ connection, googleConnection, initialD
         return Object.values(byRegion).sort((a, b) => b.spend - a.spend);
     }, [activeData?.regionInsights, filteredCampaigns]);
 
+    const filteredAgeData = useMemo(() => {
+        if (!activeData?.ageInsights) return [];
+        const campaignIds = new Set(filteredCampaigns.map(c => c.id));
+        const byAge = {};
+        for (const row of activeData.ageInsights) {
+            if (row.campaign_id && !campaignIds.has(row.campaign_id)) continue;
+            const a = row.age;
+            if (!byAge[a]) byAge[a] = { age: a, spend: 0, impressions: 0, clicks: 0, reach: 0 };
+            byAge[a].spend += row.spend || 0;
+            byAge[a].impressions += row.impressions || 0;
+            byAge[a].clicks += row.clicks || 0;
+            byAge[a].reach += row.reach || 0;
+        }
+        return Object.values(byAge);
+    }, [activeData?.ageInsights, filteredCampaigns]);
+
+    const filteredPlatformData = useMemo(() => {
+        if (!activeData?.platformInsights) return [];
+        const campaignIds = new Set(filteredCampaigns.map(c => c.id));
+        const byPlatform = {};
+        for (const row of activeData.platformInsights) {
+            if (row.campaign_id && !campaignIds.has(row.campaign_id)) continue;
+            const p = row.platform;
+            if (!byPlatform[p]) byPlatform[p] = { platform: p, spend: 0, impressions: 0, clicks: 0, reach: 0 };
+            byPlatform[p].spend += row.spend || 0;
+            byPlatform[p].impressions += row.impressions || 0;
+            byPlatform[p].clicks += row.clicks || 0;
+            byPlatform[p].reach += row.reach || 0;
+        }
+        return Object.values(byPlatform);
+    }, [activeData?.platformInsights, filteredCampaigns]);
+
     // ========================
     // PLATFORM TOGGLE (shown in connect and dashboard screens)
     // ========================
@@ -980,6 +1016,25 @@ export default function DashboardClient({ connection, googleConnection, initialD
                                 </div>
                             );
                         })()}
+
+                        {/* Optional breakdown charts */}
+                        <div className="flex items-center gap-4 flex-wrap">
+                            <span className="text-xs text-[var(--text-tertiary)] font-medium">Graficos adicionales:</span>
+                            <label className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)] cursor-pointer select-none">
+                                <input type="checkbox" checked={showAgeChart} onChange={e => setShowAgeChart(e.target.checked)} className="rounded" />
+                                Inversion por edad
+                            </label>
+                            <label className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)] cursor-pointer select-none">
+                                <input type="checkbox" checked={showPlatformChart} onChange={e => setShowPlatformChart(e.target.checked)} className="rounded" />
+                                Inversion por plataforma
+                            </label>
+                        </div>
+                        {(showAgeChart || showPlatformChart) && (
+                            <div className={`grid grid-cols-1 gap-5${showAgeChart && showPlatformChart ? ' lg:grid-cols-2' : ''}`}>
+                                {showAgeChart && <AgeBarChart ageData={filteredAgeData} currency={currency} />}
+                                {showPlatformChart && <PlatformBarChart platformData={filteredPlatformData} currency={currency} />}
+                            </div>
+                        )}
 
                         {/* Unified Ads Manager table */}
                         <AdsTable

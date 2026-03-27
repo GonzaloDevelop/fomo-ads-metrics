@@ -5,6 +5,7 @@ import { encrypt, decrypt } from '../_lib/encryption';
 import {
     fetchMetaCampaigns, fetchMetaAdSets, fetchMetaAds,
     fetchMetaInsights, fetchMetaInsightsByRegion,
+    fetchMetaInsightsByAge, fetchMetaInsightsByPlatform,
     fetchMyAdAccounts, fetchBusinessAdAccounts, clearCache,
 } from '../_lib/metaApi';
 import { computeDateRange } from '../_lib/dateUtils';
@@ -187,12 +188,16 @@ export async function getMetaData(preset, customFrom, customTo) {
         let adSets = [];
         let ads = [];
         let regionInsights = [];
+        let ageInsights = [];
+        let platformInsights = [];
         try { adSets = await fetchMetaAdSets(token, accountId, dateRange); } catch {}
         try { ads = await fetchMetaAds(token, accountId, dateRange); } catch {}
         try { regionInsights = await fetchMetaInsightsByRegion(token, accountId, dateRange); } catch {}
+        try { ageInsights = await fetchMetaInsightsByAge(token, accountId, dateRange); } catch {}
+        try { platformInsights = await fetchMetaInsightsByPlatform(token, accountId, dateRange); } catch {}
 
         return {
-            campaigns, adSets, ads, insights, previousInsights, regionInsights,
+            campaigns, adSets, ads, insights, previousInsights, regionInsights, ageInsights, platformInsights,
             dateRange: range,
             prevDateRange: { from: prevDateRange.since, to: prevDateRange.until, days },
         };
