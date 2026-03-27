@@ -1,4 +1,5 @@
 import { Toaster } from 'sonner';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 
 export const metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
             <body className="antialiased">
                 {children}
                 <Toaster expand position="top-right" />
+                <Analytics />
             </body>
         </html>
     );
