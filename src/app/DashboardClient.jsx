@@ -82,8 +82,17 @@ export default function DashboardClient({ connection, googleConnection, initialD
     const [tableMetrics, setTableMetrics] = useState(userSettings.table_metrics || null);
     const [customMetrics, setCustomMetrics] = useState(userSettings.custom_metrics || []);
     const [showCustomModal, setShowCustomModal] = useState(false);
-    const [showAgeChart, setShowAgeChart] = useState(false);
-    const [showPlatformChart, setShowPlatformChart] = useState(false);
+    const [showAgeChart, setShowAgeChart] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        return localStorage.getItem('showAgeChart') === 'true';
+    });
+    const [showPlatformChart, setShowPlatformChart] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        return localStorage.getItem('showPlatformChart') === 'true';
+    });
+
+    useEffect(() => { localStorage.setItem('showAgeChart', showAgeChart); }, [showAgeChart]);
+    useEffect(() => { localStorage.setItem('showPlatformChart', showPlatformChart); }, [showPlatformChart]);
 
     // --- Google state ---
     const [gConnInfo, setGConnInfo] = useState(googleConnection);
