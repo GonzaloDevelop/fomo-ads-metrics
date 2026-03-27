@@ -749,3 +749,21 @@ export async function fetchBusinessAdAccounts(token, businessId) {
     setCache(cacheKey, result, token);
     return result;
 }
+
+/**
+ * Fetch all Business Portfolios accessible by the user token.
+ */
+export async function fetchMyBusinesses(token) {
+    const cacheKey = 'my_businesses';
+    const cached = getCached(cacheKey, token);
+    if (cached) return cached;
+
+    const data = await fetchAllPages('/me/businesses?fields=id,name,profile_picture_uri&limit=50', token);
+    const result = data.map(b => ({
+        id: b.id,
+        name: b.name,
+        picture: b.profile_picture_uri || null,
+    }));
+    setCache(cacheKey, result, token);
+    return result;
+}

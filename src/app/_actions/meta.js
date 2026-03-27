@@ -6,7 +6,7 @@ import {
     fetchMetaCampaigns, fetchMetaAdSets, fetchMetaAds,
     fetchMetaInsights, fetchMetaInsightsByRegion,
     fetchMetaInsightsByAge, fetchMetaInsightsByPlatform,
-    fetchMyAdAccounts, fetchBusinessAdAccounts, clearCache,
+    fetchMyAdAccounts, fetchBusinessAdAccounts, fetchMyBusinesses, clearCache,
 } from '../_lib/metaApi';
 import { computeDateRange } from '../_lib/dateUtils';
 
@@ -209,6 +209,24 @@ export async function getMetaData(preset, customFrom, customTo) {
         }
         if (msg.includes('temporarily unavailable')) return { error: 'Meta temporalmente no disponible.' };
         if (msg.includes('request limit')) return { error: 'Limite de llamadas alcanzado. Espera unos minutos.' };
+        return { error: msg };
+    }
+}
+
+/**
+ * Fetch business portfolios accessible by the given token.
+ * Called right after Facebook OAuth — token not yet stored in DB.
+ */
+export async function fetchBusinessesFromToken(rawToken) {
+    if (!rawToken) return { error: 'Token requerido' };
+    try {
+        const businesses = await fetchMyBusinesses(rawToken);
+        return { ok: true, businesses };
+    } catch (err) {
+        const msg = err.message || '';
+        if (msg.includes('Invalid OAuth') || msg.includes('expired')) {
+            return { error: 'Token de Facebook inválido o expirado.' };
+        }
         return { error: msg };
     }
 }

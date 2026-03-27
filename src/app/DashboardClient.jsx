@@ -3,7 +3,7 @@
 import { useState, useMemo, useTransition, useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { connectWithToken, selectAdAccount, disconnectMeta, getMetaData, fetchAccountList } from './_actions/meta';
+import { connectWithToken, selectAdAccount, disconnectMeta, getMetaData, fetchAccountList, fetchBusinessesFromToken } from './_actions/meta';
 import { getGoogleAuthUrl, fetchGoogleAccountList, selectGoogleAccount, disconnectGoogle, getGoogleData } from './_actions/google';
 import { saveSetting } from './_actions/settings';
 import { recomputeResults } from './_lib/metaApi';
@@ -770,7 +770,7 @@ export default function DashboardClient({ connection, googleConnection, initialD
                         </div>
                     </div>
                     {isMeta ? (
-                        <ConnectForm onConnect={handleConnect} onSelectAccount={handleSelectAccount} />
+                        <ConnectForm onFetchBusinesses={fetchBusinessesFromToken} onConnect={handleConnect} onSelectAccount={handleSelectAccount} />
                     ) : (
                         <GoogleConnectForm
                             onAuthUrl={getGoogleAuthUrl}
