@@ -1,0 +1,155 @@
+{
+  "name": "Fomo Ads - Alert Checker",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Cada 4 horas",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://TU_DOMINIO.vercel.app/api/alerts/check?secret=TU_CRON_SECRET",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "check-alerts",
+      "name": "Check Alerts API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-1",
+              "leftValue": "={{ $json.triggered.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "has-alerts",
+      "name": "Hay alertas?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "triggered",
+        "options": {}
+      },
+      "id": "split-alerts",
+      "name": "Split por alerta",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "alertas@tudominio.com",
+        "toEmail": "={{ $json.user_email }}",
+        "subject": "⚠️ Alerta: {{ $json.metric_label }} {{ $json.operator }} ${{ $json.threshold }} en {{ $json.account_name }}",
+        "emailType": "html",
+        "html": "<!DOCTYPE html>\n<html>\n<head><meta charset=\"utf-8\"></head>\n<body style=\"font-family: 'DM Sans', Arial, sans-serif; background: #0D0D0D; color: #FFFFFF; padding: 40px 20px;\">\n  <div style=\"max-width: 500px; margin: 0 auto; background: #1A1A1A; border-radius: 16px; border: 1px solid #2A2A2A; overflow: hidden;\">\n    \n    <!-- Header -->\n    <div style=\"background: linear-gradient(135deg, #FF2D2D, #FF5A5A); padding: 24px; text-align: center;\">\n      <h1 style=\"margin: 0; font-size: 20px; color: #FFFFFF;\">⚠️ Alerta de Métrica</h1>\n      <p style=\"margin: 8px 0 0; font-size: 13px; color: rgba(255,255,255,0.8);\">Fomo Ads Metrics</p>\n    </div>\n    \n    <!-- Body -->\n    <div style=\"padding: 24px;\">\n      <p style=\"font-size: 14px; color: #EDEDED; margin: 0 0 16px;\">Se detectó que una métrica superó el umbral configurado:</p>\n      \n      <div style=\"background: #222222; border-radius: 12px; padding: 16px; margin-bottom: 16px;\">\n        <table style=\"width: 100%; border-collapse: collapse;\">\n          <tr>\n            <td style=\"padding: 6px 0; font-size: 12px; color: #BFBFBF;\">Cuenta</td>\n            <td style=\"padding: 6px 0; font-size: 14px; color: #FFFFFF; text-align: right; font-weight: 600;\">{{ $json.account_name }}</td>\n          </tr>\n          <tr>\n            <td style=\"padding: 6px 0; font-size: 12px; color: #BFBFBF;\">Métrica</td>\n            <td style=\"padding: 6px 0; font-size: 14px; color: #FFFFFF; text-align: right; font-weight: 600;\">{{ $json.metric_label }}</td>\n          </tr>\n          <tr>\n            <td style=\"padding: 6px 0; font-size: 12px; color: #BFBFBF;\">Valor actual</td>\n            <td style=\"padding: 6px 0; font-size: 18px; color: #FF2D2D; text-align: right; font-weight: 700;\">${{ $json.current_value }}</td>\n          </tr>\n          <tr>\n            <td style=\"padding: 6px 0; font-size: 12px; color: #BFBFBF;\">Umbral configurado</td>\n            <td style=\"padding: 6px 0; font-size: 14px; color: #EDEDED; text-align: right;\">{{ $json.operator }} ${{ $json.threshold }}</td>\n          </tr>\n          <tr>\n            <td style=\"padding: 6px 0; font-size: 12px; color: #BFBFBF;\">Fecha</td>\n            <td style=\"padding: 6px 0; font-size: 14px; color: #EDEDED; text-align: right;\">{{ $json.date }}</td>\n          </tr>\n        </table>\n      </div>\n      \n      <a href=\"https://TU_DOMINIO.vercel.app\" style=\"display: block; text-align: center; background: #FF2D2D; color: #FFFFFF; padding: 12px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600;\">Ver Dashboard</a>\n    </div>\n    \n    <!-- Footer -->\n    <div style=\"padding: 16px 24px; border-top: 1px solid #2A2A2A; text-align: center;\">\n      <p style=\"margin: 0; font-size: 11px; color: #666;\">Esta alerta fue configurada en Fomo Ads Metrics. Podés desactivarla desde /alerts.</p>\n    </div>\n  </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Enviar Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1120, 200],
+      "credentials": {}
+    },
+    {
+      "parameters": {},
+      "id": "no-alerts",
+      "name": "Sin alertas",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [900, 400]
+    }
+  ],
+  "connections": {
+    "Cada 4 horas": {
+      "main": [
+        [
+          {
+            "node": "Check Alerts API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Alerts API": {
+      "main": [
+        [
+          {
+            "node": "Hay alertas?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hay alertas?": {
+      "main": [
+        [
+          {
+            "node": "Split por alerta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sin alertas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split por alerta": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

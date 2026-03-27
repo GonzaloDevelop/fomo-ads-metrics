@@ -1,0 +1,209 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+}
+
+/* ---- FOMO Design Tokens (Dark-first) ---- */
+:root {
+  --font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Core */
+  --background: #0D0D0D;
+  --foreground: #FFFFFF;
+  --card: #1A1A1A;
+  --card-foreground: #FFFFFF;
+  --popover: #1A1A1A;
+  --popover-foreground: #FFFFFF;
+
+  /* Brand — FOMO Red */
+  --primary: #FF2D2D;
+  --primary-foreground: #FFFFFF;
+  --secondary: #2A2A2A;
+  --secondary-foreground: #EDEDED;
+  --muted: #2A2A2A;
+  --muted-foreground: #BFBFBF;
+  --accent: rgba(255, 45, 45, 0.08);
+  --accent-foreground: #FFFFFF;
+  --destructive: #FF2D2D;
+  --border: #2A2A2A;
+  --input: #2A2A2A;
+  --ring: rgba(255, 45, 45, 0.30);
+  --radius: 0.625rem;
+
+  /* Custom tokens */
+  --bg-primary: #0D0D0D;
+  --bg-secondary: #1A1A1A;
+  --bg-card: #1A1A1A;
+  --bg-elevated: #222222;
+  --bg-hover: rgba(255, 45, 45, 0.06);
+  --bg-input: #222222;
+  --accent-primary: #FF2D2D;
+  --accent-secondary: #FF5A5A;
+  --accent-hover: #FF5A5A;
+  --accent-muted: rgba(255, 45, 45, 0.10);
+
+  /* Status */
+  --success: #34D399;
+  --success-bg: rgba(16, 185, 129, 0.12);
+  --warning: #FBBF24;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --danger: #FF2D2D;
+  --danger-bg: rgba(255, 45, 45, 0.12);
+  --info: #60A5FA;
+  --info-bg: rgba(96, 165, 250, 0.12);
+
+  /* Text */
+  --text-primary: #FFFFFF;
+  --text-secondary: #EDEDED;
+  --text-tertiary: #BFBFBF;
+  --text-muted: #BFBFBF;
+  --text-inverse: #0D0D0D;
+
+  /* Borders */
+  --border-primary: #2A2A2A;
+  --border-secondary: #333333;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.40);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.50);
+
+  /* Table */
+  --row-hover: rgba(255, 45, 45, 0.04);
+  --row-alt: #151515;
+  --table-head-bg: #151515;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+}
+
+/* ---- Light Mode ---- */
+[data-theme="light"] {
+  --background: #F5F5F5;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+
+  --primary: #E02020;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F0F0F0;
+  --secondary-foreground: #333333;
+  --muted: #F0F0F0;
+  --muted-foreground: #666666;
+  --accent: rgba(224, 32, 32, 0.06);
+  --accent-foreground: #1A1A1A;
+  --destructive: #E02020;
+  --border: #E5E5E5;
+  --input: #F0F0F0;
+  --ring: rgba(224, 32, 32, 0.20);
+
+  --bg-primary: #F5F5F5;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F0F0F0;
+  --bg-hover: rgba(224, 32, 32, 0.04);
+  --bg-input: #F7F7F7;
+  --accent-primary: #E02020;
+  --accent-secondary: #FF4040;
+  --accent-hover: #FF4040;
+  --accent-muted: rgba(224, 32, 32, 0.08);
+
+  --success: #059669;
+  --success-bg: rgba(5, 150, 105, 0.10);
+  --warning: #D97706;
+  --warning-bg: rgba(217, 119, 6, 0.10);
+  --danger: #DC2626;
+  --danger-bg: rgba(220, 38, 38, 0.08);
+  --info: #2563EB;
+  --info-bg: rgba(37, 99, 235, 0.08);
+
+  --text-primary: #1A1A1A;
+  --text-secondary: #525252;
+  --text-tertiary: #8A8A8A;
+  --text-muted: #A3A3A3;
+  --text-inverse: #FFFFFF;
+
+  --border-primary: #E5E5E5;
+  --border-secondary: #D4D4D4;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+
+  --row-hover: rgba(224, 32, 32, 0.03);
+  --row-alt: #FAFAFA;
+  --table-head-bg: #F9F9F9;
+}
+
+/* ---- Base ---- */
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-family);
+  }
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%23BFBFBF' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+    @apply h-9 rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-input)] text-[var(--text-primary)] text-sm px-3 pr-8 outline-none;
+  }
+  select:focus {
+    border-color: var(--accent-primary);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #444; }
+  [data-theme="light"] ::-webkit-scrollbar-thumb { background: #CCC; }
+  [data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #BBB; }
+
+  /* Light mode select arrow */
+  [data-theme="light"] select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%23666666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+}
