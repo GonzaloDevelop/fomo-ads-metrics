@@ -569,6 +569,13 @@ export default function DashboardClient({ connection, googleConnection, initialD
         const s = r.spend || 0;
         if (r.impressions > 0) r.ctr = (r.clicks / r.impressions) * 100;
         if (r.clicks > 0) r.cpc = s / r.clicks;
+        // Recompute results from action data (raw insights don't know the objective)
+        if (!r.results) {
+            r.results = r.actions_purchase || r['actions_offsite_conversion.fb_pixel_purchase'] ||
+                        r['actions_onsite_conversion.purchase'] || r.actions_lead ||
+                        r['actions_onsite_conversion.lead_grouped'] || r['actions_offsite_conversion.fb_pixel_lead'] ||
+                        r.actions_messaging_conversation_started_7d || r['actions_onsite_conversion.messaging_conversation_started_7d'] || 0;
+        }
         if (r.results > 0) r.cost_per_result = s / r.results;
         const rev = r.action_values_purchase || r['action_values_offsite_conversion.fb_pixel_purchase'] || 0;
         if (rev > 0) r.revenue = rev;
