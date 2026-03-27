@@ -130,8 +130,9 @@ export function discoverActionMetrics(items) {
 }
 
 export function getAllMetrics(items) {
-    const dynamic = discoverActionMetrics(items);
-    return { ...METRIC_REGISTRY, ...dynamic };
+    // Only show curated metrics from the registry — no dynamic discovery of raw action types.
+    // Users can create custom metrics via "Crear métrica" if they need something specific.
+    return { ...METRIC_REGISTRY };
 }
 
 // --- Categories (ordered) ---
