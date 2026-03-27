@@ -11,7 +11,7 @@ export default function PrivacyPage() {
 
             <h2 style={{ fontSize: 17, fontWeight: 600, marginBottom: 8 }}>1. ¿Quiénes somos?</h2>
             <p style={{ marginBottom: 24 }}>
-                Growth Brick es un dashboard de métricas para Meta Ads que permite a agencias y anunciantes visualizar el rendimiento de sus campañas publicitarias. Operado por Growth Brick · <a href="mailto:hola@growthbrick.com" style={{ color: '#1877F2' }}>hola@growthbrick.com</a>.
+                Growth Brick es un dashboard de métricas para Meta Ads que permite a agencias y anunciantes visualizar el rendimiento de sus campañas publicitarias. Operado por Growth Brick · <a href="mailto:gonza.var@hotmail.com" style={{ color: '#1877F2' }}>gonza.var@hotmail.com</a>.
             </p>
 
             <h2 style={{ fontSize: 17, fontWeight: 600, marginBottom: 8 }}>2. Qué datos recopilamos</h2>
@@ -62,12 +62,12 @@ export default function PrivacyPage() {
             <h2 style={{ fontSize: 17, fontWeight: 600, marginBottom: 8 }}>7. Contacto</h2>
             <p style={{ marginBottom: 24 }}>
                 Para consultas sobre privacidad, escribinos a{' '}
-                <a href="mailto:hola@growthbrick.com" style={{ color: '#1877F2' }}>hola@growthbrick.com</a>.
+                <a href="mailto:gonza.var@hotmail.com" style={{ color: '#1877F2' }}>gonza.var@hotmail.com</a>.
             </p>
 
             <hr style={{ border: 'none', borderTop: '1px solid #e5e5e5', margin: '32px 0' }} />
             <p style={{ color: '#888', fontSize: 14 }}>
-                Growth Brick · <a href="mailto:hola@growthbrick.com" style={{ color: '#1877F2' }}>hola@growthbrick.com</a>
+                Growth Brick · <a href="mailto:gonza.var@hotmail.com" style={{ color: '#1877F2' }}>gonza.var@hotmail.com</a>
             </p>
         </main>
     );
